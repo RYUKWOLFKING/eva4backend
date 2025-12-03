@@ -1,0 +1,164 @@
+// Configuración de la API
+const API_BASE_URL = 'http://localhost:8000/api';
+
+class APIClient {
+    constructor() {
+        this.token = localStorage.getItem('access_token');
+        this.refreshToken = localStorage.getItem('refresh_token');
+    }
+
+    // Obtener JWT
+    async login(username, password) {
+        try {
+            const response = await fetch(`${API_BASE_URL}/token/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            
+            if (!response.ok) throw new Error('Credenciales inválidas');
+            
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access);
+            localStorage.setItem('refresh_token', data.refresh);
+            this.token = data.access;
+            this.refreshToken = data.refresh;
+            return data;
+        } catch (error) {
+            console.error('Error en login:', error);
+            throw error;
+        }
+    }
+
+    // Renovar token
+    async refreshAccessToken() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/token/refresh/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refresh: this.refreshToken })
+            });
+            
+            if (!response.ok) throw new Error('No se pudo renovar el token');
+            
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access);  // Guardar nuevo access_token
+            this.token = data.access;  // Actualizar el token en el cliente
+            return data;
+        } catch (error) {
+            this.logout();
+            throw error;
+        }
+    }
+
+    // Cerrar sesión
+    logout() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        this.token = null;
+        this.refreshToken = null;
+        window.location.href = '/login/';  // Redirigir al login
+    }
+
+    // Realizar peticiones autenticadas
+    async request(endpoint, method = 'GET', body = null) {
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${this.token}`
+        };
+
+        try {
+            const options = {
+                method,
+                headers,
+                credentials: 'include'
+            };
+
+            if (body) options.body = JSON.stringify(body);
+
+            let response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+
+            // Si el token expiró, renovarlo
+            if (response.status === 401) {
+                await this.refreshAccessToken();
+                headers['Authorization'] = `Bearer ${this.token}`;
+                response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                    ...options,
+                    headers
+                });
+            }
+
+            if (!response.ok) {
+                throw new Error(`Error ${response.status}: ${response.statusText}`);
+            }
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error en request:', error);
+            throw error;
+        }
+    }
+
+    // Métodos específicos de la API
+    async getProducts(page = 1) {
+        return this.request(`/products/?page=${page}`);
+    }
+
+    async getProduct(id) {
+        return this.request(`/products/${id}/`);
+    }
+
+    async getInventory() {
+        return this.request('/inventory/');
+    }
+
+    async getUserProfile() {
+        return this.request('/profile/');
+    }
+
+    async getOrders() {
+        return this.request('/orders/');
+    }
+
+    async createOrder(orderData) {
+        return this.request('/orders/', 'POST', orderData);
+    }
+
+    async getSales() {
+        return this.request('/sales/');
+    }
+
+    async createSale(saleData) {
+        return this.request('/sales/', 'POST', saleData);
+    }
+
+    async getSuppliers() {
+        return this.request('/suppliers/');
+    }
+
+    async getBranches() {
+        return this.request('/branches/');
+    }
+
+    async isAuthenticated() {
+        return !!this.token;
+    }
+
+    async getUsers() {
+        return this.request('/users/');
+    }
+}
+
+// Instancia global de cliente API
+const apiClient = new APIClient();
+
+// Verificar autenticación
+function checkAuthentication() {
+    if (!apiClient.isAuthenticated() && !window.location.pathname.includes('/login')) {
+        window.location.href = '/login/';
+    }
+}
+
+// Ejecutar al cargar la página
+document.addEventListener('DOMContentLoaded', checkAuthentication);
+

@@ -1,0 +1,511 @@
+<!-- FILE: inventory.html - Gestión de Inventario -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - TemucoSoft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard/">
+                <i class="fas fa-warehouse"></i> Inventario
+            </a>
+            <button class="btn btn-outline-light btn-sm" id="backBtn">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h2><i class="fas fa-warehouse"></i> Gestión de Inventario por Sucursal</h2>
+        
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <select class="form-select" id="branchSelect">
+                    <option>Seleccionar Sucursal...</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <input type="text" class="form-control" id="searchInventory" placeholder="Buscar producto...">
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary w-100" id="refreshBtn">
+                    <i class="fas fa-sync"></i> Actualizar
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-list"></i> Stock por Sucursal</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Producto</th>
+                                <th>Stock Actual</th>
+                                <th>Punto de Reorden</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryBody">
+                            <tr><td colspan="6" class="text-center text-muted">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        async function loadInventory() {
+            try {
+                const data = await apiClient.getInventory();
+                const tbody = document.getElementById('inventoryBody');
+                
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay inventario disponible</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                data.results.forEach(item => {
+                    const status = item.stock > item.reorder_point ? 
+                        '<span class="badge bg-success">OK</span>' : 
+                        '<span class="badge bg-warning">Bajo</span>';
+                    
+                    html += `
+                        <tr>
+                            <td>${item.product.sku || '-'}</td>
+                            <td>${item.product.name}</td>
+                            <td><strong>${item.stock}</strong></td>
+                            <td>${item.reorder_point}</td>
+                            <td>${status}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary" onclick="editStock(${item.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = '/dashboard/';
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', loadInventory);
+
+        document.addEventListener('DOMContentLoaded', loadInventory);
+    </script>
+</body>
+</html>
+
+<!-- FILE: suppliers.html - Lista de Proveedores -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores - TemucoSoft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard/">
+                <i class="fas fa-truck"></i> Proveedores
+            </a>
+            <button class="btn btn-outline-light btn-sm" id="backBtn">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2><i class="fas fa-truck"></i> Gestión de Proveedores</h2>
+            </div>
+            <div class="col-md-6 text-end">
+                <button class="btn btn-primary" id="addSupplierBtn">
+                    <i class="fas fa-plus"></i> Nuevo Proveedor
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="suppliersTable">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>RUT</th>
+                                <th>Contacto</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliersBody">
+                            <tr><td colspan="4" class="text-center text-muted">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        async function loadSuppliers() {
+            try {
+                const data = await apiClient.getSuppliers();
+                const tbody = document.getElementById('suppliersBody');
+                
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center text-muted">No hay proveedores</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                data.results.forEach(supplier => {
+                    html += `
+                        <tr>
+                            <td>${supplier.name}</td>
+                            <td>${supplier.rut}</td>
+                            <td>${supplier.contact}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info">Editar</button>
+                                <button class="btn btn-sm btn-danger">Eliminar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.getElementById('backBtn').addEventListener('click', () => {
+            window.location.href = '/dashboard/';
+        });
+
+        document.addEventListener('DOMContentLoaded', loadSuppliers);
+    </script>
+</body>
+</html>
+
+<!-- FILE: purchase.html - Crear Orden de Compra -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva Compra - TemucoSoft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard/">
+                <i class="fas fa-shopping-cart"></i> Nueva Compra
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h2><i class="fas fa-file-invoice"></i> Crear Orden de Compra</h2>
+
+        <form id="purchaseForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Información General</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Proveedor</label>
+                                <select class="form-select" id="supplier" required>
+                                    <option>Seleccionar proveedor...</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Fecha de Entrega</label>
+                                <input type="date" class="form-control" id="deliveryDate" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Resumen</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>Subtotal: $<span id="subtotal">0</span></p>
+                            <p>Impuesto (19%): $<span id="tax">0</span></p>
+                            <h4>Total: $<span id="total">0</span></h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Productos</h5>
+                </div>
+                <div class="card-body">
+                    <div id="itemsContainer"></div>
+                    <button type="button" class="btn btn-secondary" onclick="addItem()">
+                        <i class="fas fa-plus"></i> Agregar Producto
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-check"></i> Crear Orden
+            </button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        function addItem() {
+            const container = document.getElementById('itemsContainer');
+            const itemHTML = `
+                <div class="row purchase-item mb-3">
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" placeholder="Producto">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" class="form-control" placeholder="Cantidad">
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" class="form-control" placeholder="Precio">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger w-100">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.insertAdjacentHTML('beforeend', itemHTML);
+        }
+
+        document.getElementById('purchaseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alert('Orden de compra creada');
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            addItem();
+        });
+    </script>
+</body>
+</html>
+
+<!-- FILE: sales_list.html - Lista de Ventas POS -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas - TemucoSoft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard/">
+                <i class="fas fa-cash-register"></i> Ventas
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h2><i class="fas fa-list"></i> Historial de Ventas</h2>
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <input type="date" class="form-control" id="dateFilter">
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-primary w-100" id="filterBtn">
+                    <i class="fas fa-filter"></i> Filtrar
+                </button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover" id="salesTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Vendedor</th>
+                                <th>Total</th>
+                                <th>Método Pago</th>
+                                <th>Ver</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesBody">
+                            <tr><td colspan="6" class="text-center text-muted">Cargando...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        async function loadSales() {
+            try {
+                const data = await apiClient.getSales();
+                const tbody = document.getElementById('salesBody');
+                
+                if (!data.results || data.results.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No hay ventas</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                data.results.forEach(sale => {
+                    const date = new Date(sale.created_at).toLocaleDateString('es-CL');
+                    html += `
+                        <tr>
+                            <td>#${sale.id}</td>
+                            <td>${date}</td>
+                            <td>${sale.user.username}</td>
+                            <td>$${sale.total}</td>
+                            <td>${sale.payment_method}</td>
+                            <td>
+                                <button class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadSales);
+    </script>
+</body>
+</html>
+
+<!-- FILE: stock_report.html - Reporte de Stock -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Stock - TemucoSoft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+</head>
+<body>
+    <nav class="navbar navbar-dark" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard/">
+                <i class="fas fa-chart-bar"></i> Reporte de Stock
+            </a>
+        </div>
+    </nav>
+
+    <div class="container py-4">
+        <h2><i class="fas fa-file-alt"></i> Reporte de Inventario</h2>
+
+        <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 id="totalProducts" style="color: #667eea;">0</h3>
+                        <p>Productos en Stock</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 id="lowStockCount" style="color: #ffc107;">0</h3>
+                        <p>Stock Bajo</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 id="outOfStock" style="color: #dc3545;">0</h3>
+                        <p>Agotados</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <canvas id="stockChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        async function loadStockReport() {
+            try {
+                const data = await apiClient.getInventory();
+                const chart = new Chart(document.getElementById('stockChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['Stock Disponible', 'Stock Bajo', 'Agotados'],
+                        datasets: [{
+                            label: 'Productos',
+                            data: [10, 5, 2],
+                            backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+                        }]
+                    }
+                });
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadStockReport);
+    </script>
+</body>
+</html>

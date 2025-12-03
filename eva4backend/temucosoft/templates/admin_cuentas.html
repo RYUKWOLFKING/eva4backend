@@ -1,0 +1,57 @@
+{% extends 'admin_base.html' %}
+{% block title %}Cuentas de Clientes{% endblock %}
+{% block content %}
+<h3>Cuentas de Clientes</h3>
+<div class="mb-3"><button class="btn btn-primary" id="btnNewUser">Nueva Cuenta</button></div>
+<table class="table" id="usersTable"><thead><tr><th>Usuario</th><th>Email</th><th>Rol</th><th>Empresa</th><th>Acciones</th></tr></thead><tbody><tr><td colspan="5">Cargando...</td></tr></tbody></table>
+
+<div class="modal" id="userModal"><div class="modal-dialog"><div class="modal-content">
+  <div class="modal-header"><h5>Usuario</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <form id="userForm">
+      <input type="hidden" id="userId">
+      <div class="mb-3"><label>Usuario</label><input id="u_username" class="form-control" required></div>
+      <div class="mb-3"><label>Email</label><input id="u_email" class="form-control"></div>
+      <div class="mb-3"><label>Rol</label>
+        <select id="u_role" class="form-control"><option value="admin_cliente">admin_cliente</option><option value="gerente">gerente</option><option value="vendedor">vendedor</option></select>
+      </div>
+      <div class="mb-3"><label>Empresa</label><select id="u_company" class="form-control"></select></div>
+      <div class="mb-3"><label>Contraseña</label><input id="u_password" type="password" class="form-control"></div>
+      <div class="mb-3"><label>Confirmar contraseña</label><input id="u_password_confirm" type="password" class="form-control"></div>
+    </form>
+  </div>
+  <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button><button id="saveUser" class="btn btn-primary">Guardar</button></div>
+</div></div></div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const userModal = new bootstrap.Modal(document.getElementById('userModal'));
+document.getElementById('btnNewUser').addEventListener('click', ()=>{ document.getElementById('userForm').reset(); document.getElementById('userId').value=''; loadCompaniesForSelect(); userModal.show(); });
+
+async function loadUsers(){
+  const res = await fetch('/api/admin/client-accounts/', { headers: authHeaders });
+  const data = await res.json();
+  const tbody = document.querySelector('#usersTable tbody');
+  if(!res.ok){ tbody.innerHTML = '<tr><td colspan="5">Error</td></tr>'; return; }
+  tbody.innerHTML = data.map(u=>`<tr><td>${u.username}</td><td>${u.email||''}</td><td>${u.role}</td><td>${u.company_name?.name||''}</td><td><button class="btn btn-sm btn-danger" onclick="deleteUser(${u.id})">Eliminar</button></td></tr>`).join('');
+}
+
+async function loadCompaniesForSelect(){
+  const res = await fetch('/api/admin/companies/', { headers: authHeaders });
+  const data = await res.json();
+  const sel = document.getElementById('u_company'); sel.innerHTML = '<option value="">--Seleccionar--</option>' + data.map(c=>`<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+document.getElementById('saveUser').addEventListener('click', async ()=>{
+  const payload = { username: document.getElementById('u_username').value, email: document.getElementById('u_email').value, role: document.getElementById('u_role').value, company: document.getElementById('u_company').value, password: document.getElementById('u_password').value, password_confirm: document.getElementById('u_password_confirm').value };
+  const res = await fetch('/api/admin/client-accounts/', { method: 'POST', headers: Object.assign({'Content-Type':'application/json'}, authHeaders), body: JSON.stringify(payload) });
+  if(res.ok){ userModal.hide(); loadUsers(); } else { alert('Error al crear usuario'); }
+});
+
+async function deleteUser(id){ if(!confirm('Eliminar usuario?')) return; const res = await fetch('/api/users/'+id+'/', { method:'DELETE', headers: authHeaders }); if(res.ok) loadUsers(); }
+
+loadUsers();
+</script>
+{% endblock %}

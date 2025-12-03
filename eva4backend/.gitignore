@@ -1,0 +1,53 @@
+﻿# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Byte-compiled / optimized / DLL files
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.venv/
+env/
+
+# Environment files
+.env
+*.env
+
+# Django / database
+local_settings.py
+db.sqlite3
+*.sqlite3
+
+# Static & media outputs
+staticfiles/
+static_root/
+media/
+media_root/
+
+# Logs
+*.log
+logs/
+temucosoft/logs/
+
+# Tooling
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.idea/
+.vscode/
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Node
+node_modules/
+
+# OS junk
+.DS_Store
+Thumbs.db

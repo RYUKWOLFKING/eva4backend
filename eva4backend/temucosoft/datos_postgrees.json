@@ -1,0 +1,141 @@
+[
+  {
+    "model": "api.company",
+    "pk": 1,
+    "fields": {
+      "name": "Proveedor Altura",
+      "rut": "76.123.456-7",
+      "address": "Bodega Central 101, Temuco",
+      "phone": "+56911122334",
+      "email": "contacto@altura.cl",
+      "is_provider": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "api.company",
+    "pk": 2,
+    "fields": {
+      "name": "Cliente Litoral",
+      "rut": "88.888.888-8",
+      "address": "Av. Costanera 500, Valdivia",
+      "phone": "+56998765432",
+      "email": "admin@litoral.cl",
+      "is_provider": false,
+      "is_active": true
+    }
+  },
+  {
+    "model": "api.customuser",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$q6KhlhqhAO4HCVPeTkAWaa$TophNL6k+IJFOs6Gk1VxzodDaPllYa7G60FhQ+gso1k=",
+      "last_login": null,
+      "is_superuser": true,
+      "username": "super_admin",
+      "first_name": "Root",
+      "last_name": "Principal",
+      "email": "super_admin@litoral.cl",
+      "is_staff": true,
+      "date_joined": "2025-12-01T08:00:00Z",
+      "rut": "12.345.678-9",
+      "role": "super_admin",
+      "company": null,
+      "is_active": true,
+      "created_at": "2025-12-01T08:00:00Z",
+      "updated_at": "2025-12-01T08:00:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "api.customuser",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$LAg6oKzYaHHfxuZRa9p0A4$Cta865c2kreWwq2tK+xwa+1tSo7G5Uaeu2JBvP5WMhU=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "admin_litoral",
+      "first_name": "Ana",
+      "last_name": "Litoral",
+      "email": "ana@litoral.cl",
+      "is_staff": false,
+      "date_joined": "2025-12-01T08:10:00Z",
+      "rut": "15.888.888-8",
+      "role": "admin_cliente",
+      "company": 2,
+      "is_active": true,
+      "created_at": "2025-12-01T08:10:00Z",
+      "updated_at": "2025-12-01T08:10:00Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "api.branch",
+    "pk": 1,
+    "fields": {
+      "name": "Casa Matriz Litoral",
+      "company": 2,
+      "address": "Av. Costanera 500, Valdivia",
+      "phone": "+56922233445",
+      "is_active": true,
+      "created_at": "2025-12-01T08:15:00Z"
+    }
+  },
+  {
+    "model": "api.supplier",
+    "pk": 1,
+    "fields": {
+      "name": "Logistica Sur",
+      "rut": "99.999.999-9",
+      "contact_name": "Diego Campos",
+      "email": "ventas@logisticasur.cl",
+      "phone": "+56955566778",
+      "address": "Parque Industrial 12, Temuco",
+      "payment_terms": "30 dias",
+      "is_active": true,
+      "created_at": "2025-12-01T08:20:00Z"
+    }
+  },
+  {
+    "model": "api.product",
+    "pk": 1,
+    "fields": {
+      "sku": "SKU-ALTO-01",
+      "name": "Kit Herramientas Andinas",
+      "description": "Set compacto para mantenimiento en sucursales.",
+      "category": "Ferreteria",
+      "price": "49990.00",
+      "cost": "28990.00",
+      "supplier": 1,
+      "is_active": true,
+      "created_at": "2025-12-01T08:25:00Z",
+      "updated_at": "2025-12-01T08:25:00Z"
+    }
+  },
+  {
+    "model": "api.inventory",
+    "pk": 1,
+    "fields": {
+      "branch": 1,
+      "product": 1,
+      "stock": 25,
+      "reorder_point": 5,
+      "last_updated": "2025-12-01T08:30:00Z"
+    }
+  },
+  {
+    "model": "api.subscription",
+    "pk": 1,
+    "fields": {
+      "company": 2,
+      "plan_name": "basico",
+      "start_date": "2025-12-01",
+      "end_date": "2025-12-31",
+      "active": true,
+      "created_at": "2025-12-01T08:35:00Z",
+      "updated_at": "2025-12-01T08:35:00Z"
+    }
+  }
+]

@@ -1,0 +1,1853 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel | Temuco Soft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f1f34;
+            --panel: #123655;
+            --panel-2: #16486c;
+            --stroke: rgba(255,255,255,0.08);
+            --accent: #0ed3b2;
+            --accent-2: #f4a261;
+            --text: #e9f1f7;
+            --muted: #9ab0c1;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background:
+                radial-gradient(circle at 18% 18%, rgba(14,211,178,0.18), transparent 28%),
+                radial-gradient(circle at 82% 8%, rgba(244,162,97,0.2), transparent 30%),
+                var(--bg);
+            color: var(--text);
+            font-family: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
+        }
+        a { color: inherit; text-decoration: none; }
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 12;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 22px;
+            background: rgba(11,23,38,0.92);
+            border-bottom: 1px solid var(--stroke);
+            backdrop-filter: blur(10px);
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .brand i { color: var(--accent); }
+        .brand-stack {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+        .brand-text small {
+            color: var(--muted);
+            font-weight: 600;
+        }
+        .user-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--stroke);
+            padding: 8px 12px;
+            border-radius: 14px;
+        }
+        .user-block {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--stroke);
+            padding: 10px 14px;
+            border-radius: 16px;
+        }
+        .user-block .user-meta { display: none; }
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, var(--accent), #0aa08d);
+            color: #0b1726;
+            font-weight: 800;
+        }
+        .user-meta {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+        .user-meta .name {
+            font-weight: 700;
+        }
+        .role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 8px;
+            background: rgba(14,211,178,0.2);
+            color: var(--accent);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        .btn-ghost {
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,0.04);
+            color: #fff;
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,0.08); }
+        .logout-btn {
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.15); }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #11b3a2);
+            border: none;
+            color: #0b1726;
+            font-weight: 700;
+        }
+        .btn-primary:hover { box-shadow: 0 10px 30px rgba(14,211,178,0.35); }
+        .btn-secondary {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--stroke);
+            color: var(--text);
+        }
+        .app-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            padding: 14px 20px 28px;
+            min-height: calc(100vh - 72px);
+        }
+        .nav-drawer {
+            background: var(--panel);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 14px;
+            padding: 10px 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+        }
+        .nav-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 12px;
+            margin-bottom: 6px;
+        }
+        .nav-group {
+            padding: 6px 0;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+        }
+        .menu-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: var(--text);
+            border-radius: 12px;
+            border: 1px solid var(--stroke);
+            background: rgba(255,255,255,0.02);
+            transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+        }
+        .menu-item i { color: var(--muted); width: 18px; text-align: center; }
+        .menu-item:hover { background: rgba(255,255,255,0.06); transform: translateY(-1px); }
+        .menu-item.active {
+            background: rgba(14,211,178,0.16);
+            border: 1px solid rgba(14,211,178,0.3);
+            color: #fff;
+        }
+        .workspace {
+            background: var(--panel);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 22px 60px rgba(0,0,0,0.38);
+        }
+        .welcome {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 12px;
+            background: radial-gradient(circle at 30% 20%, rgba(14,211,178,0.18), transparent 40%), linear-gradient(135deg, #15466c, #0f2945);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+        }
+        .welcome h2 { margin: 0; }
+        .welcome p { margin: 4px 0 0; color: var(--muted); }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 13px;
+            letter-spacing: 0.01em;
+        }
+        .surface {
+            background: linear-gradient(145deg, #1a5075, #15466c);
+            border: none;
+            border-radius: 14px;
+            padding: 12px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+        }
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+        }
+        .stat {
+            background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(14,211,178,0.12));
+            border: none;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+        }
+        .stat strong { display: block; font-size: 18px; }
+        .stat span { color: var(--muted); font-size: 13px; }
+        .card {
+            background: linear-gradient(145deg, #1a5075, #184769);
+            border: none;
+            border-radius: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 14px 32px rgba(0,0,0,0.3);
+        }
+        .card-header {
+            background: transparent;
+            color: var(--text);
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px 16px 0 0;
+        }
+        .card-body { padding: 14px 16px 18px; }
+        .card h5, .card h6 { margin: 0; }
+        .card form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 12px 14px;
+        }
+        .card form .col-12,
+        .card form .w-100 { grid-column: 1 / -1; }
+        .card form .d-flex { gap: 10px; }
+        .table.data-table {
+            color: var(--text);
+            margin: 0;
+        }
+        .table.data-table thead { color: var(--muted); }
+        .table.data-table td, .table.data-table th {
+            border-color: var(--stroke);
+            vertical-align: middle;
+        }
+        .table.data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .hidden-role { display: none; }
+        @media (max-width: 960px) {
+            .app-shell { grid-template-columns: 1fr; }
+            .nav-drawer { position: relative; top: 0; }
+        }
+        /* Inputs y labels más legibles */
+        label { color: #dfe9f2; font-weight: 600; }
+        .form-control, .form-select {
+            background: #f4f7fb;
+            color: #0f1f34;
+            border: 1px solid #c4cdd8;
+        }
+        .form-control::placeholder { color: #6c7b8c; }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(14,211,178,0.25);
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand-stack">
+            <div class="brand">
+                <i class="fas fa-mountain-sun"></i> Temuco Soft
+            </div>
+            <div class="brand-text">
+                <span>Panel Operativo</span>
+                <small>Control y monitoreo</small>
+            </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <div class="user-block">
+                <div class="user-avatar"><i class="fas fa-user"></i></div>
+                <div class="user-meta">
+                    <span class="name" id="userName">Usuario</span>
+                    <span class="role-badge" id="userRole"><i class="fas fa-sparkles"></i> -</span>
+                </div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <i class="fas fa-power-off"></i> Cerrar sesión
+            </button>
+        </div>
+    </header>
+
+    <div class="app-shell">
+        <section class="nav-drawer" id="sidebar">
+            <div class="nav-head">
+                <span>Navigation</span>
+                <i class="fas fa-ellipsis-h"></i>
+            </div>
+            <div class="menu-grid">
+                <div id="adminClienteMenu" class="hidden-role">
+                    <div class="nav-group">
+                        <a href="#" class="menu-item" data-page="productos"><i class="fas fa-box"></i> Productos</a>
+                        <a href="#" class="menu-item" data-page="proveedores"><i class="fas fa-truck"></i> Proveedores</a>
+                        <a href="#" class="menu-item" data-page="sucursales"><i class="fas fa-building"></i> Sucursales</a>
+                        <a href="#" class="menu-item" data-page="inventario"><i class="fas fa-warehouse"></i> Inventario</a>
+                        <a href="#" class="menu-item" data-page="reportes"><i class="fas fa-chart-line"></i> Reportes</a>
+                        <a href="#" class="menu-item" data-page="usuarios"><i class="fas fa-users"></i> Usuarios</a>
+                        <a href="#" class="menu-item" data-page="suscripcion"><i class="fas fa-credit-card"></i> Suscripciones</a>
+                    </div>
+                </div>
+
+                <div id="gerenteMenu" class="hidden-role">
+                    <div class="nav-group">
+                        <a href="#" class="menu-item" data-page="productos"><i class="fas fa-box"></i> Productos</a>
+                        <a href="#" class="menu-item" data-page="proveedores"><i class="fas fa-truck"></i> Proveedores</a>
+                        <a href="#" class="menu-item" data-page="inventario"><i class="fas fa-warehouse"></i> Inventario</a>
+                        <a href="#" class="menu-item" data-page="reportes"><i class="fas fa-chart-line"></i> Reportes</a>
+                    </div>
+                </div>
+
+                <div id="vendedorMenu" class="hidden-role">
+                    <div class="nav-group">
+                        <a href="#" class="menu-item" data-page="pos"><i class="fas fa-cash-register"></i> POS</a>
+                        <a href="/catalog/" class="menu-item"><i class="fas fa-box"></i> Catalogo</a>
+                        <a href="/checkout/" class="menu-item"><i class="fas fa-shopping-cart"></i> Carrito</a>
+                    </div>
+                </div>
+
+                <div id="superAdminMenu" class="hidden-role">
+                    <div class="nav-group">
+                        <a href="#" class="menu-item" data-page="empresas"><i class="fas fa-building"></i> Empresas</a>
+                        <a href="#" class="menu-item" data-page="usuarios-admin"><i class="fas fa-users-cog"></i> Usuarios del sistema</a>
+                        <a href="#" class="menu-item" data-page="cuentas-cliente"><i class="fas fa-user-shield"></i> Cuentas cliente</a>
+                        <a href="#" class="menu-item" data-page="planes"><i class="fas fa-credit-card"></i> Planes</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main class="workspace">
+            <div class="welcome">
+                <div>
+                    <p class="pill"><i class="fas fa-circle-notch"></i> Vista operativa</p>
+                    <h2><i class="fas fa-wave-hand"></i> Hola, <span id="userWelcome">Usuario</span></h2>
+                    <p id="rolDescription">Selecciona un bloque para comenzar.</p>
+                </div>
+            </div>
+
+            <div id="contentArea">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-compass"></i> Panel listo</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Abre gestion, ventas o reportes con el menu superior. Los formularios usan grillas compactas y tarjetas opacas para una lectura distinta.</p>
+                        <div class="pill mt-2"><i class="fas fa-lightbulb"></i> Sugerencia: comienza en Inventario o POS.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        let currentRole = '';
+        const roleDescriptions = {
+            'super_admin': 'Control total - administra empresas y usuarios',
+            'admin_cliente': 'Administra tu tenant: productos, sucursales y equipo',
+            'gerente': 'Gestiona inventario y reportes sin perder visibilidad',
+            'vendedor': 'Venta rapida con POS y catalogo simplificado'
+        };
+
+        // Render helpers
+        function renderTable(rows, headers) {
+            const thead = headers.map(h => `<th>${h}</th>`).join('');
+            const body = rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+            return `<div class="table-responsive surface"><table class="table table-sm data-table"><thead><tr>${thead}</tr></thead><tbody>${body}</tbody></table></div>`;
+        }
+
+        function formatError(err) {
+            if (!err) return 'Error desconocido';
+            if (typeof err === 'string') return err;
+            if (err.detail) return err.detail;
+            if (err.message) return err.message;
+            return String(err);
+        }
+
+        // Cache de inventario para reusar en alta/ajuste
+        let invItems = [];
+
+        async function loadDashboard() {
+            try {
+                const profile = await apiClient.getUserProfile();
+                const role = profile?.role || '';
+                currentRole = role;
+
+                // Actualizar UI
+                document.getElementById('userName').textContent = profile.username || '';
+                document.getElementById('userWelcome').textContent = profile.username || '';
+                const roleTag = document.getElementById('userRole');
+                roleTag.innerHTML = role ? `<i class="fas fa-sparkles"></i> ${role.toUpperCase()}` : '-';
+                document.getElementById('rolDescription').textContent = roleDescriptions[role] || '';
+
+                // Mostrar menÃº segÃºn rol
+                showMenuByRole(role);
+
+                // Cargar estadÃ­sticas
+                // Estadísticas (solo si existen contenedores en la UI)
+                const productsEl = document.getElementById('productsCount');
+                const ordersEl = document.getElementById('ordersCount');
+                const salesEl = document.getElementById('salesCount');
+                const usersBox = document.getElementById('usersStatBox');
+                const usersEl = document.getElementById('usersCount');
+
+                if (productsEl || ordersEl || salesEl || usersEl) {
+                    const products = await apiClient.getProducts();
+                    let orders = await apiClient.getOrders().catch(() => ({ count: 0, results: [] }));
+                    const sales = await apiClient.getSales();
+
+                    const prodCount = products.count ?? products.length ?? 0;
+                    const ordersCount = orders.count ?? (orders.results ? orders.results.length : orders.length ?? 0);
+                    const salesCount = (sales.count ?? sales.length ?? 0) + ordersCount;
+
+                    if (productsEl) productsEl.textContent = prodCount;
+                    if (ordersEl) ordersEl.textContent = ordersCount;
+                    if (salesEl) salesEl.textContent = salesCount;
+
+                    if ((role === 'super_admin' || role === 'admin_cliente') && usersEl && usersBox) {
+                        usersBox.style.display = 'block';
+                        const users = await apiClient.getUsers();
+                        usersEl.textContent = users.count || (users.results ? users.results.length : 0);
+                    }
+                }
+
+                // Event listeners para el menÃº
+                document.querySelectorAll('.menu-item, .nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = item.dataset.page;
+                        handlePageNavigation(page);
+                    });
+                });
+
+            } catch (error) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando estadÃ­sticas: ${formatError(error)}</div>`;
+                console.error('Error cargando dashboard:', error);
+            }
+        }
+
+        function showMenuByRole(role) {
+            // Ocultar todos los menÃºs
+            document.getElementById('adminClienteMenu').classList.add('hidden-role');
+            document.getElementById('gerenteMenu').classList.add('hidden-role');
+            document.getElementById('vendedorMenu').classList.add('hidden-role');
+            document.getElementById('superAdminMenu').classList.add('hidden-role');
+
+            // Mostrar menÃº segÃºn rol
+            switch(role) {
+                case 'admin_cliente':
+                    document.getElementById('adminClienteMenu').classList.remove('hidden-role');
+                    break;
+                case 'gerente':
+                    document.getElementById('gerenteMenu').classList.remove('hidden-role');
+                    break;
+                case 'vendedor':
+                    document.getElementById('vendedorMenu').classList.remove('hidden-role');
+                    break;
+                case 'super_admin':
+                    document.getElementById('superAdminMenu').classList.remove('hidden-role');
+                    break;
+            }
+            const firstItem = document.querySelector(`#${role === 'admin_cliente' ? 'adminClienteMenu' : role === 'gerente' ? 'gerenteMenu' : role === 'vendedor' ? 'vendedorMenu' : 'superAdminMenu'} .menu-item`);
+            if (firstItem) {
+                handlePageNavigation(firstItem.dataset.page);
+            }
+        }
+
+        function handlePageNavigation(page) {
+            // Desactivar todos los enlaces del menÃº
+            document.querySelectorAll('.menu-item, .nav-item').forEach(item => item.classList.remove('active'));
+
+            // Activar el enlace presionado (si existe)
+            const activeItem = document.querySelector(`.menu-item[data-page="${page}"]`) || document.querySelector(`.nav-item[data-page="${page}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+
+            // Rutas para super_admin
+            if (page === 'empresas') return loadEmpresas();
+            if (page === 'usuarios-admin') return loadUsuariosAdmin();
+            if (page === 'cuentas-cliente') return loadCuentasCliente();
+            if (page === 'planes') return loadPlanes();
+            if (page === 'estadisticas') return loadEstadisticas();
+            if (page === 'reportes') return loadReportes();
+            if (page === 'reportes-admin') return loadReportesAdmin();
+            // Rutas para admin_cliente / gerente / vendedor
+            if (page === 'productos') return loadProductos();
+            if (page === 'proveedores') return loadProveedores();
+            if (page === 'sucursales') return loadSucursales();
+            if (page === 'inventario') return loadInventario();
+            if (page === 'usuarios') return loadUsuariosTenant();
+            if (page === 'suscripcion') return loadSuscripcion();
+            if (page === 'pos') return loadPOS();
+
+            document.getElementById('contentArea').innerHTML = `
+                <div class="card">
+                    <div class="card-header"><h5 class="mb-0"><i class="fas fa-info-circle"></i> PÃ¡gina: <strong>${page}</strong></h5></div>
+                    <div class="card-body"><p class="alert alert-info mb-0">En desarrollo. Contenido temporal.</p></div>
+                </div>`;
+        }
+
+        async function loadEmpresas() {
+            try {
+                const companies = await apiClient.request('/admin/companies/');
+                const rows = companies.map(c => [
+                    c.name,
+                    c.rut || '-',
+                    c.email || '-',
+                    c.is_active ? '<span class="badge bg-success">Activa</span>' : '<span class="badge bg-secondary">Inactiva</span>',
+                    `<button class="btn btn-sm btn-outline-primary" data-action="edit" data-id="${c.id}">Editar</button>
+                     <button class="btn btn-sm btn-outline-danger" data-action="del" data-id="${c.id}">Eliminar</button>`
+                ]);
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-building"></i> Empresas Clientes</h5>
+                            <small class="text-muted">solo super_admin</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(rows, ['Nombre', 'RUT', 'Email', 'Estado', 'Acciones'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear nueva empresa</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="formEmpresa" class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Nombre</label>
+                                    <input class="form-control" name="name" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">RUT</label>
+                                    <input class="form-control" name="rut" placeholder="76.123.456-7" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">telefono</label>
+                                    <input class="form-control" name="phone" placeholder="+56911111111" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input class="form-control" name="email" type="email">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Direccion</label>
+                                    <input class="form-control" name="address">
+                                </div>
+                                <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">Crear empresa</button>
+                                    <button type="button" class="btn btn-secondary" id="resetEmpresa">Limpiar</button>
+                                </div>
+                                <div class="col-12">
+                                    <div id="empresaError" class="text-danger small"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.querySelectorAll('[data-action]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        if (btn.dataset.action === 'del') {
+                            if (!confirm('Eliminar empresa?')) return;
+                            try {
+                                await apiClient.request(`/admin/companies/${id}/`, 'DELETE');
+                                loadEmpresas();
+                            } catch (err) {
+                                alert('Error al eliminar: ' + formatError(err));
+                            }
+                        } else if (btn.dataset.action === 'edit') {
+                            const company = companies.find(c => String(c.id) === String(id));
+                            if (!company) return;
+                            const form = document.getElementById('formEmpresa');
+                            form.name.value = company.name;
+                            form.rut.value = company.rut || '';
+                            form.phone.value = company.phone || '';
+                            form.email.value = company.email || '';
+                            form.address.value = company.address || '';
+                            form.dataset.editId = id;
+                            form.querySelector('button[type="submit"]').textContent = 'Actualizar empresa';
+                        }
+                    });
+                });
+
+                document.getElementById('formEmpresa').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const form = ev.target;
+                    const payload = {
+                        name: form.name.value,
+                        rut: form.rut.value,
+                        phone: form.phone.value,
+                        email: form.email.value,
+                        address: form.address.value,
+                        is_active: true
+                    };
+                    const errorBox = document.getElementById('empresaError');
+                    errorBox.textContent = '';
+                    try {
+                        const editId = form.dataset.editId;
+                        if (editId) {
+                            await apiClient.request(`/admin/companies/${editId}/`, 'PATCH', payload);
+                        } else {
+                            await apiClient.request('/admin/companies/', 'POST', payload);
+                        }
+                        form.reset();
+                        form.dataset.editId = '';
+                        form.querySelector('button[type="submit"]').textContent = 'Crear empresa';
+                        loadEmpresas();
+                    } catch (err) {
+                        errorBox.textContent = formatError(err);
+                    }
+                });
+
+                document.getElementById('resetEmpresa').addEventListener('click', () => {
+                    const form = document.getElementById('formEmpresa');
+                    form.reset();
+                    form.dataset.editId = '';
+                    form.querySelector('button[type="submit"]').textContent = 'Crear empresa';
+                    document.getElementById('empresaError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando empresas: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadUsuariosAdmin() {
+            try {
+                const users = await apiClient.request('/users/');
+                const rows = users.results ? users.results : users; // soporte paginado
+                const tableRows = rows.map(u => [u.username, u.email || '-', u.role, u.company_name?.name || '-']);
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-users-cog"></i> Usuarios del Sistema</h5>
+                            <small class="text-muted">super_admin / admin_cliente</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(tableRows, ['Usuario', 'Email', 'Rol', 'Empresa'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear usuario</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="formUsuario" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Usuario</label>
+                                    <input class="form-control" name="username" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Email</label>
+                                    <input class="form-control" name="email" type="email">
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Rol</label>
+                                    <select class="form-select" name="role" required>
+                                        <option value="admin_cliente">admin_cliente</option>
+                                        <option value="gerente">gerente</option>
+                                        <option value="vendedor">vendedor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Empresa</label>
+                                    <select class="form-select" name="company" id="usuarioCompany" required></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">RUT</label>
+                                    <input class="form-control" name="rut" placeholder="12.345.678-9" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">contraseña</label>
+                                    <input class="form-control" name="password" type="password" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Confirmar</label>
+                                    <input class="form-control" name="password_confirm" type="password" required>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Crear usuario</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                // fill companies
+                const companies = await apiClient.request('/admin/companies/');
+                const select = document.getElementById('usuarioCompany');
+                select.innerHTML = companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+                document.getElementById('formUsuario').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = {
+                        username: f.username.value,
+                        email: f.email.value,
+                        role: f.role.value,
+                        company: f.company.value,
+                        rut: f.rut.value,
+                        password: f.password.value,
+                        password_confirm: f.password_confirm.value
+                    };
+                    try {
+                        await apiClient.request('/admin/accounts/', 'POST', payload);
+                        loadUsuariosAdmin();
+                    } catch (err) {
+                        alert('Error al crear usuario: ' + formatError(err));
+                    }
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando usuarios: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadCuentasCliente() {
+            try {
+                const accounts = await apiClient.request('/admin/accounts/');
+                const rows = accounts.map(u => [
+                    u.username,
+                    u.email || '-',
+                    u.role,
+                    u.company_name?.name || '-',
+                    `<button class="btn btn-sm btn-outline-primary" data-action="edit-account" data-id="${u.id}">Editar</button>
+                     <button class="btn btn-sm btn-outline-danger" data-action="del-account" data-id="${u.id}">Eliminar</button>`
+                ]);
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-user-shield"></i> Cuentas Admin Cliente</h5>
+                            <small class="text-muted">super_admin crea/gestiona admins de cliente</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(rows, ['Usuario', 'Email', 'Rol', 'Empresa', 'Acciones'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear admin_cliente</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="formCuenta" class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Usuario</label>
+                                    <input class="form-control" name="username" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Email</label>
+                                    <input class="form-control" name="email" type="email">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">RUT</label>
+                                    <input class="form-control" name="rut" placeholder="12.345.678-9" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Empresa</label>
+                                    <select class="form-select" name="company" id="cuentaCompany" required></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">contraseña</label>
+                                    <input class="form-control" name="password" type="password" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Confirmar</label>
+                                    <input class="form-control" name="password_confirm" type="password" required>
+                                </div>
+                                <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">Crear admin_cliente</button>
+                                    <button type="button" class="btn btn-secondary" id="resetCuenta">Limpiar</button>
+                                </div>
+                                <div class="col-12">
+                                    <div id="cuentaError" class="text-danger small"></div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                // llenar empresas
+                const companies = await apiClient.request('/admin/companies/');
+                const select = document.getElementById('cuentaCompany');
+                select.innerHTML = companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+                document.querySelectorAll('[data-action="del-account"]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Eliminar usuario?')) return;
+                        const id = btn.dataset.id;
+                        try {
+                            await apiClient.request(`/admin/accounts/${id}/`, 'DELETE');
+                            loadCuentasCliente();
+                        } catch (err) {
+                            alert('Error al eliminar: ' + formatError(err));
+                        }
+                    });
+                });
+
+                document.querySelectorAll('[data-action="edit-account"]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const id = btn.dataset.id;
+                        const account = accounts.find(a => String(a.id) === String(id));
+                        if (!account) return;
+                        const f = document.getElementById('formCuenta');
+                        f.username.value = account.username || '';
+                        f.email.value = account.email || '';
+                        f.rut.value = account.rut || '';
+                        f.company.value = account.company || '';
+                        f.dataset.editId = id;
+                        f.querySelector('button[type="submit"]').textContent = 'Actualizar admin_cliente';
+                    });
+                });
+
+                document.getElementById('formCuenta').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = {
+                        username: f.username.value,
+                        email: f.email.value,
+                        rut: f.rut.value,
+                        company: f.company.value,
+                        role: 'admin_cliente',
+                        password: f.password.value,
+                        password_confirm: f.password_confirm.value
+                    };
+                    const errBox = document.getElementById('cuentaError');
+                    errBox.textContent = '';
+                    try {
+                        const editId = f.dataset.editId;
+                        if (editId) {
+                            await apiClient.request(`/admin/accounts/${editId}/`, 'PATCH', payload);
+                        } else {
+                            await apiClient.request('/admin/accounts/', 'POST', payload);
+                        }
+                        f.reset();
+                        f.dataset.editId = '';
+                        f.querySelector('button[type="submit"]').textContent = 'Crear admin_cliente';
+                        loadCuentasCliente();
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+
+                document.getElementById('resetCuenta').addEventListener('click', () => {
+                    document.getElementById('formCuenta').reset();
+                    document.getElementById('cuentaError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando cuentas: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadPlanes() {
+            try {
+                const billing = await apiClient.request('/admin/billing/');
+                const subs = await apiClient.request('/subscriptions/');
+
+                const rows = (subs.results ? subs.results : subs).map(s => [
+                    s.company_name || '-',
+                    s.plan_name,
+                    s.start_date,
+                    s.end_date,
+                    s.active ? '<span class="badge bg-success">Activa</span>' : '<span class="badge bg-secondary">Inactiva</span>',
+                ]);
+
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-credit-card"></i> Planes y FacturaciÃ³n</h5>
+                            <small class="text-muted">super_admin</small>
+                        </div>
+                        <div class="card-body">
+                            <p>Total clientes: <strong>${billing.total_client_companies}</strong></p>
+                            <p>Total usuarios: <strong>${billing.total_users}</strong></p>
+                            <p>Total ventas registradas: <strong>${billing.total_sales}</strong></p>
+                            <hr/>
+                            ${renderTable(rows, ['Empresa', 'Plan', 'Inicio', 'Fin', 'Estado'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear / Actualizar suscripcion</h6>
+                        </div>
+                        <div class="card-body">
+                            <form id="formSub" class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Empresa</label>
+                                    <select class="form-select" name="company" id="subCompany" required></select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Plan</label>
+                                    <select class="form-select" name="plan_name" required>
+                                        <option value="basico">BÃ¡sico</option>
+                                        <option value="estandar">EstÃ¡ndar</option>
+                                        <option value="premium">Premium</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha inicio</label>
+                                    <input type="date" class="form-control" name="start_date" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Fecha fin</label>
+                                    <input type="date" class="form-control" name="end_date" required>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="active" id="subActive" checked>
+                                        <label class="form-check-label" for="subActive">Activa</label>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-primary">Guardar suscripciÃ³n</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                // fill companies
+                const companies = await apiClient.request('/admin/companies/');
+                const select = document.getElementById('subCompany');
+                select.innerHTML = companies.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+
+                document.getElementById('formSub').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = {
+                        company: f.company.value,
+                        plan_name: f.plan_name.value,
+                        start_date: f.start_date.value,
+                        end_date: f.end_date.value,
+                        active: f.active.checked,
+                    };
+                    try {
+                        await apiClient.request('/subscriptions/', 'POST', payload);
+                        loadPlanes();
+                    } catch (err) {
+                        alert('Error al guardar suscripciÃ³n: ' + formatError(err));
+                    }
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando facturaciÃ³n: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadEstadisticas() {
+            try {
+                const products = await apiClient.getProducts();
+                let orders = { count: 0 };
+                // vendedores no tienen permiso para Ã³rdenes ecommerce
+                if (currentRole !== 'vendedor') {
+                    orders = await apiClient.getOrders();
+                }
+                const sales = await apiClient.getSales();
+                const users = await apiClient.getUsers();
+                const html = `
+                    <div class="card">
+                        <div class="card-header"><h5 class="mb-0"><i class="fas fa-chart-bar"></i> EstadÃ­sticas rÃ¡pidas</h5></div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3"><div class="stat-box"><h3>${products.count || products.length || 0}</h3><p>Productos</p></div></div>
+                                <div class="col-md-3"><div class="stat-box"><h3>${orders.count || orders.length || 0}</h3><p>Ordenes</p></div></div>
+                                <div class="col-md-3"><div class="stat-box"><h3>${sales.count || sales.length || 0}</h3><p>Ventas</p></div></div>
+                                <div class="col-md-3"><div class="stat-box"><h3>${users.count || users.length || 0}</h3><p>Usuarios</p></div></div>
+                            </div>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando estadÃ­sticas: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadReportes() {
+            try {
+                const stock = await apiClient.request('/reports/stock/');
+                const branches = await apiClient.request('/branches/');
+                const sales = await apiClient.request('/reports/sales/');
+
+                const stockRows = stock.map(r => [r.branch, r.product, r.sku, r.stock, r.reorder_point, r.status]);
+                const salesRows = (sales.rows || []).map(r => [r.branch, r.total, r.payment_method, r.created_at]);
+                const branchOptions = (branches.results || branches).map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header"><h5 class="mb-0"><i class="fas fa-warehouse"></i> Reporte de Stock</h5></div>
+                        <div class="card-body">
+                            ${renderTable(stockRows, ['Sucursal', 'Producto', 'SKU', 'Stock', 'Reorden', 'Estado'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-receipt"></i> Reporte de Ventas</h5>
+                            <small>Total: ${sales.total || 0}</small>
+                        </div>
+                        <div class="card-body">
+                            <form id="formSalesFilter" class="row g-3 mb-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Sucursal</label>
+                                    <select class="form-select" name="branch">
+                                        <option value="">Todas</option>
+                                        ${branchOptions}
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Desde</label>
+                                    <input type="date" class="form-control" name="date_from">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Hasta</label>
+                                    <input type="date" class="form-control" name="date_to">
+                                </div>
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                                </div>
+                            </form>
+                            ${renderTable(salesRows, ['Sucursal', 'Total', 'Pago', 'Fecha'])}
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.getElementById('formSalesFilter').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const params = new URLSearchParams();
+                    const f = ev.target;
+                    if (f.branch.value) params.append('branch', f.branch.value);
+                    if (f.date_from.value) params.append('date_from', f.date_from.value);
+                    if (f.date_to.value) params.append('date_to', f.date_to.value);
+                    try {
+                        const filtered = await apiClient.request(`/reports/sales/?${params.toString()}`);
+                        const filteredRows = (filtered.rows || []).map(r => [r.branch, r.total, r.payment_method, r.created_at]);
+                        document.querySelector('#contentArea .card:last-child .card-header small').textContent = `Total: ${filtered.total || 0}`;
+                        document.querySelector('#contentArea .card:last-child .card-body').innerHTML = document.querySelector('#contentArea .card:last-child .card-body').innerHTML.replace(/<table[\s\S]*<\/table>/, renderTable(filteredRows, ['Sucursal', 'Total', 'Pago', 'Fecha']));
+                    } catch (err) {
+                        alert('Error al filtrar: ' + formatError(err));
+                    }
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando reportes: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadReportesAdmin() {
+            try {
+                // reutiliza los mismos endpoints pero enfocado al super_admin
+                const stock = await apiClient.request('/reports/stock/');
+                const sales = await apiClient.request('/reports/sales/');
+                const companies = await apiClient.request('/admin/companies/');
+
+                const stockRows = stock.map(r => [r.branch, r.product, r.sku, r.stock, r.reorder_point, r.status]);
+                const salesRows = (sales.rows || []).map(r => [r.branch, r.total, r.payment_method, r.created_at]);
+                const companyRows = companies.map(c => [c.name, c.rut || '-', c.email || '-', c.phone || '-', c.is_active ? 'Activa' : 'Inactiva']);
+
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-building"></i> Empresas Clientes</h5>
+                            <small class="text-muted">VisiÃ³n super_admin</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(companyRows, ['Nombre', 'RUT', 'Email', 'telefono', 'Estado'])}
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header"><h5 class="mb-0"><i class="fas fa-warehouse"></i> Stock por sucursal</h5></div>
+                        <div class="card-body">
+                            ${renderTable(stockRows, ['Sucursal', 'Producto', 'SKU', 'Stock', 'Reorden', 'Estado'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-receipt"></i> Ventas recientes</h5>
+                            <small>Total: ${sales.total || 0}</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(salesRows, ['Sucursal', 'Total', 'Pago', 'Fecha'])}
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando reportes admin: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadUsuariosTenant() {
+            try {
+                const data = await apiClient.request('/admin/accounts/');
+                const items = data.results || data;
+                const rows = items.map(u => [
+                    u.username,
+                    u.email || '-',
+                    u.role,
+                    `<button class="btn btn-sm btn-outline-primary" data-action="edit-tenant-user" data-id="${u.id}">Editar</button>
+                     <button class="btn btn-sm btn-outline-danger" data-action="del-tenant-user" data-id="${u.id}">Eliminar</button>`
+                ]);
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-users"></i> Usuarios de la empresa</h5>
+                            <small class="text-muted">admin_cliente</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(rows, ['Usuario', 'Email', 'Rol', 'Acciones'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear / Editar usuario</h6></div>
+                        <div class="card-body">
+                            <form id="formTenantUser" class="row g-3">
+                                <div class="col-md-4"><label class="form-label">Usuario</label><input name="username" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">Email</label><input name="email" type="email" class="form-control"></div>
+                                <div class="col-md-4"><label class="form-label">Rol</label>
+                                    <select name="role" class="form-select" required>
+                                        <option value="gerente">gerente</option>
+                                        <option value="vendedor">vendedor</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6"><label class="form-label">RUT</label><input name="rut" class="form-control" placeholder="12.345.678-9" required></div>
+                                <div class="col-md-6"><label class="form-label">ContraseÃ±a</label><input name="password" type="password" class="form-control"></div>
+                                <div class="col-md-6"><label class="form-label">Confirmar</label><input name="password_confirm" type="password" class="form-control"></div>
+                                <div class="col-12 d-flex gap-2"><button type="submit" class="btn btn-primary">Guardar</button><button type="button" class="btn btn-secondary" id="resetTenantUser">Limpiar</button></div>
+                                <div class="col-12"><div id="tenantUserError" class="text-danger small"></div></div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.querySelectorAll('[data-action="del-tenant-user"]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Eliminar usuario?')) return;
+                        try {
+                            await apiClient.request(`/admin/accounts/${btn.dataset.id}/`, 'DELETE');
+                            loadUsuariosTenant();
+                        } catch (err) {
+                            alert('Error al eliminar: ' + formatError(err));
+                        }
+                    });
+                });
+
+                document.querySelectorAll('[data-action="edit-tenant-user"]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const usr = items.find(u => String(u.id) === btn.dataset.id);
+                        if (!usr) return;
+                        const f = document.getElementById('formTenantUser');
+                        f.dataset.editId = usr.id;
+                        f.username.value = usr.username || '';
+                        f.email.value = usr.email || '';
+                        f.role.value = usr.role || 'vendedor';
+                        f.rut.value = usr.rut || '';
+                        f.querySelector('button[type="submit"]').textContent = 'Actualizar';
+                    });
+                });
+
+                document.getElementById('formTenantUser').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = {
+                        username: f.username.value,
+                        email: f.email.value,
+                        role: f.role.value,
+                        rut: f.rut.value,
+                    };
+                    if (f.password.value) {
+                        payload.password = f.password.value;
+                        payload.password_confirm = f.password_confirm.value;
+                    }
+                    const errBox = document.getElementById('tenantUserError');
+                    errBox.textContent = '';
+                    try {
+                        if (f.dataset.editId) {
+                            await apiClient.request(`/admin/accounts/${f.dataset.editId}/`, 'PATCH', payload);
+                        } else {
+                            await apiClient.request('/admin/accounts/', 'POST', payload);
+                        }
+                        loadUsuariosTenant();
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+
+                document.getElementById('resetTenantUser').addEventListener('click', () => {
+                    const f = document.getElementById('formTenantUser');
+                    f.reset();
+                    f.dataset.editId = '';
+                    f.querySelector('button[type="submit"]').textContent = 'Guardar';
+                    document.getElementById('tenantUserError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando usuarios: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadSuscripcion() {
+            try {
+                const data = await apiClient.request('/subscriptions/me/');
+                const html = `
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-credit-card"></i> SuscripciÃ³n</h5>
+                            <span class="badge ${data.active ? 'bg-success' : 'bg-secondary'}">${data.active ? 'Activa' : 'Inactiva'}</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Empresa:</strong> ${data.company_name || '-'}</p>
+                            <p><strong>Plan:</strong> ${data.plan_name}</p>
+                            <p><strong>Inicio:</strong> ${data.start_date}</p>
+                            <p><strong>Fin:</strong> ${data.end_date}</p>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-warning">No hay suscripciÃ³n activa para tu empresa.</div>`;
+            }
+        }
+
+        async function loadPOS() {
+            try {
+                const branches = await apiClient.request('/branches/');
+                const products = await apiClient.getProducts();
+                const sales = await apiClient.getSales();
+                const orders = await apiClient.getOrders().catch(() => ({ results: [], count: 0 }));
+                const branchOptions = (branches.results || branches).map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+                const productOptions = (products.results || products).map(p => `<option value="${p.id}" data-price="${p.price}">${p.name} (${p.sku})</option>`).join('');
+                const salesRows = (sales.results || sales).map(s => [
+                    s.branch,
+                    s.total,
+                    s.payment_method,
+                    s.created_at
+                ]);
+                const orderRows = (orders.results || orders).map(o => [
+                    o.branch || 'Online',
+                    o.total,
+                    o.payment_method || o.status || 'ecommerce',
+                    o.created_at
+                ]);
+                const combinedRows = [...salesRows, ...orderRows];
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header"><h5 class="mb-0"><i class="fas fa-cash-register"></i> Registrar venta POS</h5></div>
+                        <div class="card-body">
+                            <form id="formSale" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Sucursal</label>
+                                    <select class="form-select" name="branch" required>
+                                        ${branchOptions}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Producto</label>
+                                    <select class="form-select" name="product" required>
+                                        ${productOptions}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Cantidad</label>
+                                    <input type="number" min="1" name="quantity" class="form-control" value="1" required>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Precio</label>
+                                    <input type="number" min="0" step="0.01" name="price" class="form-control" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Pago</label>
+                                    <select class="form-select" name="payment_method" required>
+                                        <option value="efectivo">efectivo</option>
+                                        <option value="tarjeta_credito">tarjeta_credito</option>
+                                        <option value="tarjeta_debito">tarjeta_debito</option>
+                                        <option value="transferencia">transferencia</option>
+                                        <option value="cheque">cheque</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">Registrar venta</button>
+                                    <button type="button" class="btn btn-secondary" id="resetSale">Limpiar</button>
+                                </div>
+                                <div class="col-12"><div id="saleError" class="text-danger small"></div></div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-list"></i> Ventas recientes</h5>
+                            <small>Total: ${(sales.count || salesRows.length) + (orders.count || orderRows.length)}</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(combinedRows, ['Sucursal', 'Total', 'Pago', 'Fecha'])}
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                // Prefija precio segÃºn producto seleccionado
+                const prodSelect = document.querySelector('#formSale select[name="product"]');
+                const priceInput = document.querySelector('#formSale input[name="price"]');
+                prodSelect.addEventListener('change', () => {
+                    const opt = prodSelect.selectedOptions[0];
+                    const price = opt ? opt.getAttribute('data-price') : 0;
+                    priceInput.value = price || 0;
+                });
+                prodSelect.dispatchEvent(new Event('change'));
+
+                document.getElementById('formSale').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = {
+                        branch: f.branch.value,
+                        user: null, // el backend tomarÃ¡ request.user
+                        total: parseFloat(f.price.value || 0) * parseInt(f.quantity.value || 1, 10),
+                        payment_method: f.payment_method.value,
+                        items: [
+                            {
+                                product: f.product.value,
+                                quantity: parseInt(f.quantity.value || 1, 10),
+                                price: parseFloat(f.price.value || 0)
+                            }
+                        ]
+                    };
+                    const errBox = document.getElementById('saleError');
+                    errBox.textContent = '';
+                    try {
+                        await apiClient.request('/sales/', 'POST', payload);
+                        loadPOS();
+                        // refrescar stats del dashboard principal si se desea
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+                document.getElementById('resetSale').addEventListener('click', () => {
+                    const f = document.getElementById('formSale');
+                    f.reset();
+                    prodSelect.dispatchEvent(new Event('change'));
+                    document.getElementById('saleError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error en POS: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadProductos() {
+            try {
+                const data = await apiClient.getProducts();
+                const items = data.results || data;
+                const rows = items.map(p => [
+                    p.sku, p.name, p.category || '-', p.price, p.cost,
+                    `<button class="btn btn-sm btn-outline-primary" data-action="edit-prod" data-id="${p.id}">Editar</button>
+                     <button class="btn btn-sm btn-outline-danger" data-action="del-prod" data-id="${p.id}">Eliminar</button>`
+                ]);
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0"><i class="fas fa-box"></i> Productos</h5>
+                            <small class="text-muted">admin_cliente / gerente</small>
+                        </div>
+                        <div class="card-body">
+                            ${renderTable(rows, ['SKU', 'Nombre', 'CategorÃ­a', 'Precio', 'Costo', 'Acciones'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear / Editar producto</h6></div>
+                        <div class="card-body">
+                            <form id="formProd" class="row g-3">
+                                <div class="col-md-4"><label class="form-label">SKU</label><input name="sku" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">Nombre</label><input name="name" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">CategorÃ­a</label><input name="category" class="form-control"></div>
+                                <div class="col-md-6"><label class="form-label">Precio</label><input type="number" min="0" step="0.01" name="price" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Costo</label><input type="number" min="0" step="0.01" name="cost" class="form-control" required></div>
+                                <div class="col-12 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">Guardar</button>
+                                    <button type="button" class="btn btn-secondary" id="resetProd">Limpiar</button>
+                                </div>
+                                <div class="col-12"><div id="prodError" class="text-danger small"></div></div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.querySelectorAll('[data-action="edit-prod"]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const prod = items.find(p => String(p.id) === btn.dataset.id);
+                        if (!prod) return;
+                        const f = document.getElementById('formProd');
+                        f.dataset.editId = prod.id;
+                        f.sku.value = prod.sku || '';
+                        f.name.value = prod.name || '';
+                        f.category.value = prod.category || '';
+                        f.price.value = prod.price || 0;
+                        f.cost.value = prod.cost || 0;
+                        f.querySelector('button[type="submit"]').textContent = 'Actualizar';
+                    });
+                });
+
+                document.querySelectorAll('[data-action="del-prod"]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Eliminar producto?')) return;
+                        try {
+                            await apiClient.request(`/products/${btn.dataset.id}/`, 'DELETE');
+                            loadProductos();
+                        } catch (err) {
+                            alert('Error al eliminar: ' + formatError(err));
+                        }
+                    });
+                });
+
+                document.getElementById('formProd').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = {
+                        sku: f.sku.value,
+                        name: f.name.value,
+                        category: f.category.value,
+                        price: parseFloat(f.price.value || 0),
+                        cost: parseFloat(f.cost.value || 0),
+                        supplier: null
+                    };
+                    const errBox = document.getElementById('prodError');
+                    errBox.textContent = '';
+                    try {
+                        if (f.dataset.editId) {
+                            await apiClient.request(`/products/${f.dataset.editId}/`, 'PATCH', payload);
+                        } else {
+                            await apiClient.request('/products/', 'POST', payload);
+                        }
+                        loadProductos();
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+                document.getElementById('resetProd').addEventListener('click', () => {
+                    const f = document.getElementById('formProd');
+                    f.reset();
+                    f.dataset.editId = '';
+                    f.querySelector('button[type="submit"]').textContent = 'Guardar';
+                    document.getElementById('prodError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando productos: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadProveedores() {
+            try {
+                const data = await apiClient.request('/suppliers/');
+                const items = data.results || data;
+                const rows = items.map(s => [
+                    s.name, s.rut, s.email || '-', s.phone || '-',
+                    `<button class="btn btn-sm btn-outline-primary" data-action="edit-supp" data-id="${s.id}">Editar</button>
+                     <button class="btn btn-sm btn-outline-danger" data-action="del-supp" data-id="${s.id}">Eliminar</button>`
+                ]);
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header"><h5 class="mb-0"><i class="fas fa-truck"></i> Proveedores</h5></div>
+                        <div class="card-body">
+                            ${renderTable(rows, ['Nombre', 'RUT', 'Email', 'telefono', 'Acciones'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear / Editar proveedor</h6></div>
+                        <div class="card-body">
+                            <form id="formSupp" class="row g-3">
+                                <div class="col-md-6"><label class="form-label">Nombre</label><input name="name" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">RUT</label><input name="rut" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Email</label><input name="email" type="email" class="form-control"></div>
+                                <div class="col-md-6"><label class="form-label">Telefono</label><input name="phone" class="form-control" placeholder="+56912345678"></div>
+                                <div class="col-12"><label class="form-label">Contacto</label><input name="contact_name" class="form-control"></div>
+                                <div class="col-12"><label class="form-label">Direccion</label><input name="address" class="form-control"></div>
+                                <div class="col-12 d-flex gap-2"><button type="submit" class="btn btn-primary">Guardar</button><button type="button" class="btn btn-secondary" id="resetSupp">Limpiar</button></div>
+                                <div class="col-12"><div id="suppError" class="text-danger small"></div></div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.querySelectorAll('[data-action="edit-supp"]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const sup = items.find(s => String(s.id) === btn.dataset.id);
+                        if (!sup) return;
+                        const f = document.getElementById('formSupp');
+                        f.dataset.editId = sup.id;
+                        f.name.value = sup.name || '';
+                        f.rut.value = sup.rut || '';
+                        f.email.value = sup.email || '';
+                        f.phone.value = sup.phone || '';
+                        f.contact_name.value = sup.contact_name || '';
+                        f.address.value = sup.address || '';
+                        f.querySelector('button[type="submit"]').textContent = 'Actualizar';
+                    });
+                });
+
+                document.querySelectorAll('[data-action="del-supp"]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Eliminar proveedor?')) return;
+                        try {
+                            await apiClient.request(`/suppliers/${btn.dataset.id}/`, 'DELETE');
+                            loadProveedores();
+                        } catch (err) {
+                            alert('Error al eliminar: ' + formatError(err));
+                        }
+                    });
+                });
+
+                document.getElementById('formSupp').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = {
+                        name: f.name.value,
+                        rut: f.rut.value,
+                        email: f.email.value,
+                        phone: f.phone.value,
+                        contact_name: f.contact_name.value,
+                        address: f.address.value,
+                    };
+                    const errBox = document.getElementById('suppError');
+                    errBox.textContent = '';
+                    try {
+                        if (f.dataset.editId) {
+                            await apiClient.request(`/suppliers/${f.dataset.editId}/`, 'PATCH', payload);
+                        } else {
+                            await apiClient.request('/suppliers/', 'POST', payload);
+                        }
+                        loadProveedores();
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+                document.getElementById('resetSupp').addEventListener('click', () => {
+                    const f = document.getElementById('formSupp');
+                    f.reset();
+                    f.dataset.editId = '';
+                    f.querySelector('button[type="submit"]').textContent = 'Guardar';
+                    document.getElementById('suppError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando proveedores: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadSucursales() {
+            try {
+                const data = await apiClient.request('/branches/');
+                const items = data.results || data;
+                const rows = items.map(b => [
+                    b.name, b.phone || '-', b.address || '-',
+                    `<button class="btn btn-sm btn-outline-primary" data-action="edit-branch" data-id="${b.id}">Editar</button>
+                     <button class="btn btn-sm btn-outline-danger" data-action="del-branch" data-id="${b.id}">Eliminar</button>`
+                ]);
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header"><h5 class="mb-0"><i class="fas fa-building"></i> Sucursales</h5></div>
+                        <div class="card-body">
+                            ${renderTable(rows, ['Nombre', 'Telefono', 'Direccion', 'Acciones'])}
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear / Editar sucursal</h6></div>
+                        <div class="card-body">
+                            <form id="formBranch" class="row g-3">
+                                <div class="col-md-6"><label class="form-label">Nombre</label><input name="name" class="form-control" required></div>
+                                <div class="col-md-6"><label class="form-label">Telefono</label><input name="phone" class="form-control" placeholder="+56912345678" required></div>
+                                <div class="col-12"><label class="form-label">Direccion</label><input name="address" class="form-control"></div>
+                                <div class="col-12 d-flex gap-2"><button type="submit" class="btn btn-primary">Guardar</button><button type="button" class="btn btn-secondary" id="resetBranch">Limpiar</button></div>
+                                <div class="col-12"><div id="branchError" class="text-danger small"></div></div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.querySelectorAll('[data-action="edit-branch"]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const br = items.find(b => String(b.id) === btn.dataset.id);
+                        if (!br) return;
+                        const f = document.getElementById('formBranch');
+                        f.dataset.editId = br.id;
+                        f.name.value = br.name || '';
+                        f.phone.value = br.phone || '';
+                        f.address.value = br.address || '';
+                        f.querySelector('button[type="submit"]').textContent = 'Actualizar';
+                    });
+                });
+
+                document.querySelectorAll('[data-action="del-branch"]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Eliminar sucursal?')) return;
+                        try {
+                            await apiClient.request(`/branches/${btn.dataset.id}/`, 'DELETE');
+                            loadSucursales();
+                        } catch (err) {
+                            alert('Error al eliminar: ' + formatError(err));
+                        }
+                    });
+                });
+
+                document.getElementById('formBranch').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = { name: f.name.value, phone: f.phone.value, address: f.address.value };
+                    const errBox = document.getElementById('branchError');
+                    errBox.textContent = '';
+                    try {
+                        if (f.dataset.editId) {
+                            await apiClient.request(`/branches/${f.dataset.editId}/`, 'PATCH', payload);
+                        } else {
+                            await apiClient.request('/branches/', 'POST', payload);
+                        }
+                        loadSucursales();
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+                document.getElementById('resetBranch').addEventListener('click', () => {
+                    const f = document.getElementById('formBranch');
+                    f.reset();
+                    f.dataset.editId = '';
+                    f.querySelector('button[type="submit"]').textContent = 'Guardar';
+                    document.getElementById('branchError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando sucursales: ${formatError(e)}</div>`;
+            }
+        }
+
+        async function loadInventario() {
+            try {
+                const branches = await apiClient.request('/branches/');
+                const products = await apiClient.getProducts();
+                const inv = await apiClient.request('/inventory/');
+                const branchMap = {};
+                const productMap = {};
+                (branches.results || branches).forEach(b => { branchMap[b.id] = b.name; });
+                (products.results || products).forEach(p => { productMap[p.id] = p; });
+
+                const branchOptions = (branches.results || branches)
+                    .map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+                const productOptions = (products.results || products)
+                    .map(p => `<option value="${p.id}">${p.name} (${p.sku || ''})</option>`).join('');
+
+                const items = inv.results || inv;
+                invItems = items;
+                const rows = items.map(i => {
+                    const prod = productMap[i.product];
+                    const prodLabel = prod ? `${prod.name} (${prod.sku || ''})` : `Prod ${i.product}`;
+                    return [
+                        branchMap[i.branch] || i.branch,
+                        prodLabel,
+                        i.stock,
+                        i.reorder_point,
+                        `<button class="btn btn-sm btn-outline-primary" data-action="edit-inv" data-id="${i.id}">Editar</button>
+                         <button class="btn btn-sm btn-outline-danger" data-action="del-inv" data-id="${i.id}">Eliminar</button>`
+                    ];
+                });
+                const invOptions = items.map(i => {
+                    const prod = productMap[i.product];
+                    const prodLabel = prod ? `${prod.name} (${prod.sku || ''})` : `Prod ${i.product}`;
+                    const branchLabel = branchMap[i.branch] || i.branch;
+                    return `<option value="${i.id}" data-stock="${i.stock}" data-reorder="${i.reorder_point}">${branchLabel} - ${prodLabel}</option>`;
+                }).join('');
+
+                const html = `
+                    <div class="card mb-3">
+                        <div class="card-header"><h5 class="mb-0"><i class="fas fa-warehouse"></i> Inventario</h5></div>
+                        <div class="card-body">
+                            ${renderTable(rows, ['Sucursal', 'Producto', 'Stock', 'Reorden', 'Acciones'])}
+                        </div>
+                    </div>
+                    <div class="card mb-3">
+                        <div class="card-header"><h6 class="mb-0"><i class="fas fa-plus-circle"></i> Crear inventario</h6></div>
+                        <div class="card-body">
+                            <form id="formInvCreate" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Sucursal</label>
+                                    <select name="branch" class="form-select" required>
+                                        <option value="" disabled selected>Selecciona sucursal</option>
+                                        ${branchOptions}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label">Producto</label>
+                                    <select name="product" class="form-select" required>
+                                        <option value="" disabled selected>Selecciona producto</option>
+                                        ${productOptions}
+                                    </select>
+                                </div>
+                                <div class="col-md-2"><label class="form-label">Stock</label><input type="number" name="stock" class="form-control" required></div>
+                                <div class="col-md-2"><label class="form-label">Reorden</label><input type="number" name="reorder_point" class="form-control" required></div>
+                                <div class="col-12 d-flex gap-2"><button type="submit" class="btn btn-primary">Crear</button><button type="button" class="btn btn-secondary" id="resetInvCreate">Limpiar</button></div>
+                                <div class="col-12"><div id="invCreateError" class="text-danger small"></div></div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header"><h6 class="mb-0"><i class="fas fa-adjust"></i> Ajustar inventario</h6></div>
+                        <div class="card-body">
+                            <form id="formInv" class="row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label">Inventario</label>
+                                    <select name="id" class="form-select" required>
+                                        <option value="" disabled selected>Selecciona registro</option>
+                                        ${invOptions}
+                                    </select>
+                                </div>
+                                <div class="col-md-4"><label class="form-label">Stock</label><input type="number" name="stock" class="form-control" required></div>
+                                <div class="col-md-4"><label class="form-label">Reorden</label><input type="number" name="reorder_point" class="form-control" required></div>
+                                <div class="col-12 d-flex gap-2"><button type="submit" class="btn btn-primary">Actualizar</button><button type="button" class="btn btn-secondary" id="resetInv">Limpiar</button></div>
+                                <div class="col-12"><div id="invError" class="text-danger small"></div></div>
+                            </form>
+                        </div>
+                    </div>`;
+                document.getElementById('contentArea').innerHTML = html;
+
+                document.querySelectorAll('[data-action="edit-inv"]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const item = items.find(i => String(i.id) === btn.dataset.id);
+                        if (!item) return;
+                        const f = document.getElementById('formInv');
+                        f.id.value = item.id;
+                        f.stock.value = item.stock;
+                        f.reorder_point.value = item.reorder_point;
+                        // Forzar la actualizaciÃ³n de los campos al seleccionar por ID
+                        f.dispatchEvent(new Event('change'));
+                    });
+                });
+
+                document.querySelectorAll('[data-action="del-inv"]').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        if (!confirm('Eliminar registro de inventario?')) return;
+                        try {
+                            await apiClient.request(`/inventory/${btn.dataset.id}/`, 'DELETE');
+                            loadInventario();
+                        } catch (err) {
+                            alert('Error al eliminar: ' + formatError(err));
+                        }
+                    });
+                });
+
+                document.getElementById('formInv').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payload = { stock: parseInt(f.stock.value || 0, 10), reorder_point: parseInt(f.reorder_point.value || 0, 10) };
+                    const errBox = document.getElementById('invError');
+                    errBox.textContent = '';
+                    try {
+                        await apiClient.request(`/inventory/${f.id.value}/`, 'PATCH', payload);
+                        loadInventario();
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+                document.getElementById('resetInv').addEventListener('click', () => {
+                    const f = document.getElementById('formInv');
+                    f.reset();
+                    document.getElementById('invError').textContent = '';
+                });
+                document.querySelector('#formInv select[name="id"]').addEventListener('change', (ev) => {
+                    const opt = ev.target.selectedOptions[0];
+                    if (!opt) return;
+                    document.querySelector('#formInv input[name="stock"]').value = opt.dataset.stock || '';
+                    document.querySelector('#formInv input[name="reorder_point"]').value = opt.dataset.reorder || '';
+                });
+
+                // Crear inventario
+                document.getElementById('formInvCreate').addEventListener('submit', async (ev) => {
+                    ev.preventDefault();
+                    const f = ev.target;
+                    const payloadCreate = {
+                        branch: f.branch.value,
+                        product: f.product.value,
+                        stock: parseInt(f.stock.value || 0, 10),
+                        reorder_point: parseInt(f.reorder_point.value || 0, 10),
+                    };
+                    const payloadUpdate = {
+                        stock: payloadCreate.stock,
+                        reorder_point: payloadCreate.reorder_point,
+                    };
+                    const errBox = document.getElementById('invCreateError');
+                    errBox.textContent = '';
+                    try {
+                        const existing = (invItems || []).find(
+                            i => String(i.branch) === String(f.branch.value) && String(i.product) === String(f.product.value)
+                        );
+                        if (existing) {
+                            await apiClient.request(`/inventory/${existing.id}/`, 'PATCH', payloadUpdate);
+                        } else {
+                            await apiClient.request('/inventory/', 'POST', payloadCreate);
+                        }
+                        loadInventario();
+                    } catch (err) {
+                        errBox.textContent = formatError(err);
+                    }
+                });
+                document.getElementById('resetInvCreate').addEventListener('click', () => {
+                    const f = document.getElementById('formInvCreate');
+                    f.reset();
+                    document.getElementById('invCreateError').textContent = '';
+                });
+            } catch (e) {
+                document.getElementById('contentArea').innerHTML = `<div class="alert alert-danger">Error cargando inventario: ${formatError(e)}</div>`;
+            }
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            apiClient.logout();
+        });
+
+        // Cargar al inicializar
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>
+
+

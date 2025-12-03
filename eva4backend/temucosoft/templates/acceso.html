@@ -1,0 +1,253 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso | Temuco Soft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d1b2a;
+            --panel: rgba(255,255,255,0.06);
+            --card: #0f2538;
+            --accent: #0dd3b1;
+            --accent-2: #f4a261;
+            --muted: #8ea6b8;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: radial-gradient(circle at 20% 20%, rgba(13,211,177,0.16), transparent 22%),
+                        radial-gradient(circle at 80% 0%, rgba(244,162,97,0.22), transparent 24%),
+                        var(--bg);
+            color: #e8f1f8;
+            font-family: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 20px;
+        }
+        .shell {
+            width: min(1080px, 100%);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 18px;
+        }
+        .glass {
+            background: var(--panel);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 18px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+            padding: 26px;
+        }
+        .intro {
+            position: relative;
+            overflow: hidden;
+        }
+        .intro h1 { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; }
+        .intro p { color: var(--muted); margin: 10px 0 18px; line-height: 1.5; }
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(13,211,177,0.14);
+            color: #0dd3b1;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+        .track {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .track div {
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .track strong { display: block; font-size: 15px; margin-bottom: 4px; color: #e8f1f8; }
+        .track small { color: var(--muted); }
+        .login-card h2 { margin: 0; font-weight: 700; }
+        .login-card .lead { color: var(--muted); margin: 6px 0 18px; }
+        form {
+            display: grid;
+            gap: 14px;
+        }
+        label { font-weight: 600; font-size: 14px; color: #dce7ef; }
+        .form-control {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #e8f1f8;
+            padding: 12px 14px;
+        }
+        .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(13,211,177,0.2);
+        }
+        .input-group-text, .btn-outline-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #e8f1f8;
+            border-color: rgba(255,255,255,0.1);
+        }
+        .btn-login {
+            background: linear-gradient(135deg, var(--accent), #11b3a2);
+            border: none;
+            padding: 13px 16px;
+            color: #0b1a27;
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            transition: transform 0.18s ease, box-shadow 0.18s ease;
+        }
+        .btn-login:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(13,211,177,0.35); }
+        .msg {
+            display: none;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        .msg.error { background: rgba(220,53,69,0.12); color: #ff9aa2; border: 1px solid rgba(220,53,69,0.25); }
+        .msg.success { background: rgba(13,211,177,0.12); color: #7ff5df; border: 1px solid rgba(13,211,177,0.25); }
+        .token-display {
+            display: none;
+            margin-top: 10px;
+            padding: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px dashed rgba(255,255,255,0.15);
+            border-radius: 12px;
+        }
+        .token-display code { color: #7ff5df; font-size: 12px; word-break: break-all; }
+        .footer {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="glass intro">
+            <div class="pill"><i class="fas fa-signal"></i> Temuco Soft · Panel seguro</div>
+            <h1>Conecta tu equipo y activa el flujo operativo</h1>
+            <p>Autenticaci&oacute;n JWT con seguimiento de rol. Mant&eacute;n el token en localStorage y accede al panel sin fricciones.</p>
+            <div class="track">
+                <div>
+                    <strong>Roles activos</strong>
+                    <small>Super admin, Admin cliente, Gerencia, Ventas</small>
+                </div>
+                <div>
+                    <strong>Seguridad</strong>
+                    <small>Tokens rotativos · HTTPS recomendado</small>
+                </div>
+                <div>
+                    <strong>API Ready</strong>
+                    <small>Authorization: Bearer &lt;token&gt;</small>
+                </div>
+            </div>
+        </section>
+
+        <section class="glass login-card">
+            <div class="d-flex justify-content-between align-items-start gap-3">
+                <div>
+                    <h2><i class="fas fa-key"></i> Ingreso</h2>
+                    <p class="lead mb-0">Identif&iacute;cate para continuar al panel.</p>
+                </div>
+                <span class="badge bg-warning text-dark">JWT first</span>
+            </div>
+            <form id="jwtLoginForm" class="mt-3">
+                <div class="d-flex flex-column gap-1">
+                    <label for="jwtUsername">Usuario</label>
+                    <input type="text" class="form-control" id="jwtUsername" name="username" required placeholder="ej: admin_cliente">
+                </div>
+                <div class="d-flex flex-column gap-1">
+                    <label for="jwtPassword">Contrase&ntilde;a</label>
+                    <div class="input-group">
+                        <input type="password" class="form-control" id="jwtPassword" name="password" required placeholder="&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;&#8226;">
+                        <button class="btn btn-outline-secondary" type="button" id="togglePwd" aria-label="Mostrar u ocultar contrase&ntilde;a">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-login w-100">
+                    <i class="fas fa-arrow-right"></i> Obtener token JWT
+                </button>
+                <div class="msg error" id="jwtErrorMessage"></div>
+                <div class="msg success" id="jwtSuccessMessage"></div>
+                </form>
+            <div class="footer">
+                <i class="fas fa-lock"></i> Autenticaci&oacute;n cifrada · Temuco Soft
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        // Rellena credenciales de prueba y enfoca el formulario
+        function fillDemoUser(username, password) {
+            document.getElementById('jwtUsername').value = username;
+            document.getElementById('jwtPassword').value = password;
+            document.getElementById('jwtLoginForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('jwtLoginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('jwtUsername').value;
+            const password = document.getElementById('jwtPassword').value;
+            const errorDiv = document.getElementById('jwtErrorMessage');
+            const successDiv = document.getElementById('jwtSuccessMessage');
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            try {
+                const response = await apiClient.login(username, password);
+                const profile = await apiClient.getUserProfile();
+                localStorage.setItem('user_role', profile.role);
+                localStorage.setItem('auth_method', 'jwt');
+
+                successDiv.innerHTML = '<i class="fas fa-check-circle"></i> Sesión abierta. Token guardado en localStorage.';
+                successDiv.style.display = 'block';
+                setTimeout(() => { window.location.href = '/dashboard/'; }, 5000);
+            } catch (error) {
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> No pudimos autenticar. Revisa usuario o contrase&ntilde;a.';
+                errorDiv.style.display = 'block';
+                console.error('JWT login error:', error);
+            }
+        });
+
+        function goToDashboardJWT() {
+            window.location.href = '/dashboard/';
+        }
+
+        // Mostrar/ocultar contrase&ntilde;a
+        (function () {
+            const toggle = document.getElementById('togglePwd');
+            const input = document.getElementById('jwtPassword');
+            if (!toggle || !input) return;
+            toggle.addEventListener('click', () => {
+                const isPassword = input.type === 'password';
+                input.type = isPassword ? 'text' : 'password';
+                toggle.querySelector('i').classList.toggle('fa-eye');
+                toggle.querySelector('i').classList.toggle('fa-eye-slash');
+            });
+        })();
+
+        if (apiClient.isAuthenticated()) {
+            window.location.href = '/dashboard/';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% extends 'admin_base.html' %}
+{% block title %}Facturación{% endblock %}
+{% block content %}
+<h3>Facturación y Planes</h3>
+<div class="row mt-3">
+  <div class="col-md-4"><div class="card p-3">Empresas: <span id="billCompanies">0</span></div></div>
+  <div class="col-md-4"><div class="card p-3">Usuarios: <span id="billUsers">0</span></div></div>
+  <div class="col-md-4"><div class="card p-3">Ventas: <span id="billSales">0</span></div></div>
+</div>
+
+<div class="mt-4">
+  <table class="table" id="invoices"><thead><tr><th>Fecha</th><th>Descripción</th><th>Monto</th><th>Estado</th></tr></thead><tbody><tr><td colspan="4">Cargando...</td></tr></tbody></table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+(async function(){
+  const res = await fetch('/api/admin/billing/', { headers: authHeaders });
+  if(!res.ok) return;
+  const data = await res.json();
+  document.getElementById('billCompanies').textContent = data.total_client_companies;
+  document.getElementById('billUsers').textContent = data.total_users;
+  document.getElementById('billSales').textContent = data.total_sales;
+  // invoices simulated
+  const tbody = document.querySelector('#invoices tbody');
+  tbody.innerHTML = '';
+  for(let i=0;i<3;i++){
+    let d = new Date(); d.setMonth(d.getMonth()-i);
+    tbody.innerHTML += `<tr><td>${d.toLocaleDateString()}</td><td>Plan enterprise</td><td>$${(50000).toLocaleString()}</td><td><span class="badge bg-success">Pagada</span></td></tr>`;
+  }
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,281 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo - TemucoSoft</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f5f7fa;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .product-card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        .product-image {
+            background-color: #e9ecef;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px 8px 0 0;
+            font-size: 3rem;
+            color: #999;
+        }
+        .product-info {
+            padding: 1.5rem;
+        }
+        .product-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .product-price {
+            font-size: 1.25rem;
+            color: #667eea;
+            font-weight: bold;
+            margin: 0.5rem 0;
+        }
+        .product-stock {
+            font-size: 0.875rem;
+            color: #999;
+            margin-bottom: 1rem;
+        }
+        .btn-add-cart {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            width: 100%;
+        }
+        .btn-add-cart:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+        }
+        .filters {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .pagination {
+            margin-top: 2rem;
+            justify-content: center;
+        }
+        .search-box {
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/dashboard/">
+                <i class="fas fa-store"></i> TemucoSoft
+            </a>
+            <div class="d-flex align-items-center">
+                <a href="/checkout/" class="btn btn-outline-light btn-sm me-2">
+                    <i class="fas fa-shopping-cart"></i> Carrito
+                </a>
+                <button class="btn btn-outline-light btn-sm" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Salir
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid py-4">
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1><i class="fas fa-box"></i> Catálogo de Productos</h1>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="row mb-4">
+            <div class="col-md-8 offset-md-2">
+                <div class="input-group input-group-lg search-box">
+                    <input type="text" class="form-control" id="searchInput" placeholder="Buscar productos...">
+                    <button class="btn btn-outline-secondary" type="button" id="searchBtn">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="row">
+            <div class="col-12">
+                <div id="productsContainer" class="row">
+                    <div class="col-12 text-center">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando productos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav id="paginationContainer" class="mt-4"></nav>
+    </div>
+
+    <!-- Cart Notification -->
+    <div id="cartNotification" class="alert alert-success alert-dismissible fade show position-fixed bottom-0 end-0 m-3" role="alert" style="display: none;">
+        <strong>¡Éxito!</strong> Producto agregado al carrito
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/api.js' %}"></script>
+    <script>
+        let currentPage = 1;
+        let allProducts = [];
+        let currentRenderedProducts = [];
+        let productStockMap = {};
+
+        async function loadProducts(page = 1) {
+            try {
+                const [data, inventory] = await Promise.all([
+                    apiClient.getProducts(page),
+                    apiClient.getInventory().catch(() => []),
+                ]);
+
+                allProducts = data.results || [];
+
+                productStockMap = {};
+                const inventoryList = Array.isArray(inventory)
+                    ? inventory
+                    : (inventory && Array.isArray(inventory.results) ? inventory.results : []);
+                inventoryList.forEach(inv => {
+                    const pid = inv.product;
+                    const qty = Number(inv.stock || 0);
+                    productStockMap[pid] = (productStockMap[pid] || 0) + qty;
+                });
+
+                renderProducts(allProducts);
+                renderPagination(data);
+            } catch (error) {
+                console.error('Error cargando productos:', error);
+                document.getElementById('productsContainer').innerHTML = 
+                    '<div class="col-12 alert alert-danger">Error al cargar los productos</div>';
+            }
+        }
+
+        function renderProducts(products) {
+            currentRenderedProducts = products;
+            const container = document.getElementById('productsContainer');
+            if (!products || products.length === 0) {
+                container.innerHTML = '<div class="col-12 alert alert-info">No hay productos disponibles</div>';
+                return;
+            }
+
+            let html = '';
+            products.forEach(product => {
+                const stock = productStockMap[product.id] ?? 0;
+                const sinStock = stock <= 0;
+                html += `
+                    <div class="col-sm-6 col-md-4 col-lg-3 mb-4">
+                        <div class="card product-card">
+                            <div class="product-image">
+                                <i class="fas fa-cube"></i>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-name">${product.name}</div>
+                                <p class="text-muted small">${product.description || 'Sin descripcion'}</p>
+                                <div class="product-price">$${product.price}</div>
+                                <div class="product-stock">
+                                    Stock: <strong class="${sinStock ? 'text-danger' : ''}">${sinStock ? 'Sin stock' : stock}</strong>
+                                </div>
+                                <button class="btn btn-sm btn-add-cart" 
+                                        ${sinStock ? 'disabled' : ''}
+                                        onclick="addToCart(${product.id}, '${product.name.replace(/'/g, "\\'")}', ${product.price})">
+                                    <i class="fas fa-cart-plus"></i> Agregar al carrito
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderPagination(data) {
+            const container = document.getElementById('paginationContainer');
+            if (!data.next && !data.previous) return;
+
+            let html = '<nav><ul class="pagination">';
+            
+            if (data.previous) {
+                html += `<li class="page-item"><button class="page-link" onclick="loadProducts(${currentPage - 1})">Anterior</button></li>`;
+            }
+            
+            html += `<li class="page-item active"><span class="page-link">Pagina ${currentPage}</span></li>`;
+            
+            if (data.next) {
+                html += `<li class="page-item"><button class="page-link" onclick="loadProducts(${currentPage + 1})">Siguiente</button></li>`;
+            }
+            
+            html += '</ul></nav>';
+            container.innerHTML = html;
+        }
+
+        async function addToCart(productId, productName, price) {
+            try {
+                const available = productStockMap[productId] ?? 0;
+                if (available <= 0) {
+                    alert('Sin stock disponible para este producto.');
+                    return;
+                }
+
+                await apiClient.addToCart(productId, 1);
+
+                productStockMap[productId] = Math.max(0, available - 1);
+                renderProducts(currentRenderedProducts);
+
+                const notification = document.getElementById('cartNotification');
+                notification.style.display = 'block';
+                notification.textContent = `${productName} agregado al carrito`;
+                setTimeout(() => {
+                    notification.style.display = 'none';
+                }, 3000);
+            } catch (err) {
+                console.error('Error al agregar al carrito', err);
+                alert('Error al agregar al carrito: ' + err.message);
+            }
+        }
+
+        // Search
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allProducts.filter(p => 
+                p.name.toLowerCase().includes(search) || 
+                (p.description && p.description.toLowerCase().includes(search))
+            );
+            renderProducts(filtered);
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            apiClient.logout();
+        });
+
+        // Load on init
+        document.addEventListener('DOMContentLoaded', () => loadProducts(1));
+    </script>
+</body>
+</html>

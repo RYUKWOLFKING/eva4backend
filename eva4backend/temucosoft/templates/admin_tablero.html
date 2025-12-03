@@ -1,0 +1,33 @@
+{% extends 'admin_base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h3>Dashboard Administrativo</h3>
+<div class="row mt-4">
+  <div class="col-md-4"><div class="card p-3">Empresas: <span id="statCompanies">0</span></div></div>
+  <div class="col-md-4"><div class="card p-3">Usuarios: <span id="statUsers">0</span></div></div>
+  <div class="col-md-4"><div class="card p-3">Ventas: <span id="statSales">0</span></div></div>
+</div>
+
+<div class="mt-4">
+  <div class="btn-group">
+    <a href="/admin/panel/companies/" class="btn btn-primary">Gestionar Empresas</a>
+    <a href="/admin/panel/accounts/" class="btn btn-secondary">Gestionar Cuentas</a>
+    <a href="/admin/panel/billing/" class="btn btn-outline-primary">Ver Facturación</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (async function loadStats(){
+    try{
+      const res = await fetch('/api/admin/billing/', { headers: authHeaders });
+      if (!res.ok) throw new Error('No autorizado');
+      const data = await res.json();
+      document.getElementById('statCompanies').textContent = data.total_client_companies;
+      document.getElementById('statUsers').textContent = data.total_users;
+      document.getElementById('statSales').textContent = data.total_sales;
+    }catch(e){ console.error(e); }
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,272 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temuco Soft | Plataforma operativa</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b1726;
+            --panel: #0f2436;
+            --accent: #0ed3b2;
+            --accent-2: #f4a261;
+            --stroke: rgba(255,255,255,0.08);
+            --muted: #9ab0c1;
+            --text: #e9f1f7;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Space Grotesk', 'Segoe UI', Tahoma, sans-serif;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(14,211,178,0.18), transparent 28%),
+                radial-gradient(circle at 80% 10%, rgba(244,162,97,0.16), transparent 25%),
+                var(--bg);
+            color: var(--text);
+        }
+        a { color: inherit; text-decoration: none; }
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(12px);
+            background: rgba(11,23,38,0.9);
+            border-bottom: 1px solid var(--stroke);
+        }
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        .brand i { color: var(--accent); }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            color: var(--muted);
+        }
+        .nav-links a:hover { color: #fff; }
+        .btn {
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--stroke);
+            font-weight: 700;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #11b3a2);
+            color: #0b1726;
+            border: none;
+        }
+        .btn-ghost { background: rgba(255,255,255,0.04); color: #fff; }
+        .btn:hover { transform: translateY(-1px); }
+        main { max-width: 1200px; margin: 0 auto; padding: 28px 24px 80px; }
+        .hero {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 22px;
+            align-items: center;
+            padding: 26px;
+            background: linear-gradient(135deg, rgba(14,211,178,0.08), rgba(15,36,54,0.9));
+            border: 1px solid var(--stroke);
+            border-radius: 20px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+        }
+        .hero h1 { margin: 0 0 12px; font-size: clamp(32px, 4vw, 44px); letter-spacing: -0.03em; }
+        .hero p { margin: 0 0 18px; color: var(--muted); line-height: 1.6; }
+        .hero ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+        .hero li { display: flex; align-items: center; gap: 10px; }
+        .hero .bubble {
+            background: var(--panel);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: rgba(14,211,178,0.18);
+            color: var(--accent);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--stroke);
+            border-radius: 16px;
+            padding: 16px;
+        }
+        .card h3 { margin: 0 0 8px; }
+        .card p { margin: 0; color: var(--muted); line-height: 1.5; }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+        .metrics .pill {
+            border-radius: 14px;
+            padding: 12px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--stroke);
+        }
+        .pill strong { display: block; font-size: 18px; margin-bottom: 6px; }
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 28px 0 14px;
+        }
+        .section-title small { color: var(--muted); }
+        footer {
+            border-top: 1px solid var(--stroke);
+            color: var(--muted);
+            text-align: center;
+            padding: 18px 24px 32px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="brand">
+                <i class="fas fa-mountain-sun"></i> Temuco Soft
+            </div>
+            <div class="nav-links">
+                <a href="#arquitectura">Arquitectura</a>
+                <a href="#modulos">M&oacute;dulos</a>
+                <a href="#cta">Arranque</a>
+                <a class="btn btn-ghost" href="/login/">Ir al panel</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div>
+                <div class="badge"><i class="fas fa-satellite-dish"></i> Plataforma modular</div>
+                <h1>Backend desacoplado para operaciones minoristas y B2B</h1>
+                <p>Orquesta inventario, ventas, cuentas de clientes y suscripciones en un stack liviano. Pensado para desplegar r&aacute;pido y dar visibilidad a tu equipo.</p>
+                <div class="metrics">
+                    <div class="pill">
+                        <strong>Seguridad JWT</strong>
+                        <small>Rotaci&oacute;n y refresco integrado</small>
+                    </div>
+                    <div class="pill">
+                        <strong>Roles activos</strong>
+                        <small>Super admin, cliente, gerencia, ventas</small>
+                    </div>
+                    <div class="pill">
+                        <strong>API lista</strong>
+                        <small>/api/token/ &middot; /api/profile/</small>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:18px;">
+                    <a class="btn btn-primary" href="/login/"><i class="fas fa-bolt"></i> Probar ahora</a>
+                    <a class="btn btn-ghost" href="#modulos">Ver m&oacute;dulos</a>
+                </div>
+            </div>
+            <div class="bubble">
+                <h3 style="margin-top:0;">Panel de estado</h3>
+                <ul>
+                    <li><i class="fas fa-shield-halved" style="color:var(--accent);"></i> Autenticaci&oacute;n JWT + sesiones</li>
+                    <li><i class="fas fa-warehouse" style="color:var(--accent-2);"></i> Inventario por sucursal y punto de reorden</li>
+                    <li><i class="fas fa-users-gear" style="color:#7dd3fc;"></i> Usuarios ligados a empresas proveedoras o clientes</li>
+                    <li><i class="fas fa-credit-card" style="color:#d8b4fe;"></i> Compras y ventas con resumen r&aacute;pido</li>
+                    <li><i class="fas fa-file-circle-check" style="color:#fbbf24;"></i> Reportes filtrables listos para exportar</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="section-title" id="arquitectura">
+            <h2>Arquitectura ligera</h2>
+            <small>REST + Django + JWT + filtros</small>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3><i class="fas fa-diagram-project"></i> Capas desacopladas</h3>
+                <p>API REST limpia con viewsets y permisos por rol. Separaci&oacute;n clara entre cat&aacute;logo, inventario, ventas y cuentas.</p>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-filter-circle-dollar"></i> Data preparada</h3>
+                <p>Paginaci&oacute;n, filtros y ordenamiento listos. Tablas responsivas y helper para mostrar errores legibles.</p>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-sparkles"></i> UI renovada</h3>
+                <p>Nuevo layout con grillas compactas, tarjetas transl&uacute;cidas y tipograf&iacute;a Space Grotesk para diferenciar el front.</p>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-database"></i> Config simple</h3>
+                <p>Variables .env unificadas para base de datos y CORS. Listo para apuntar a tu servidor PostgreSQL.</p>
+            </div>
+        </div>
+
+        <div class="section-title" id="modulos">
+            <h2>M&oacute;dulos operativos</h2>
+            <small>Todo en un dashboard compacto</small>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>Cat&aacute;logo y proveedores</h3>
+                <p>Productos con SKU, costo y precio. Proveedores centralizados para compras y reaprovisionamiento.</p>
+            </div>
+            <div class="card">
+                <h3>Inventario por sucursal</h3>
+                <p>Stock y punto de reorden con edici&oacute;n directa. Resumen de salud de inventario y alertas de agotado.</p>
+            </div>
+            <div class="card">
+                <h3>POS ligero</h3>
+                <p>Registro de ventas r&aacute;pido ligado a sucursal y vendedor. Totales y m&eacute;todos de pago listos para reporte.</p>
+            </div>
+            <div class="card">
+                <h3>Clientes y planes</h3>
+                <p>Empresas y usuarios administrados por rol. Subscripciones visibles para cada tenant.</p>
+            </div>
+        </div>
+
+        <section class="hero" id="cta" style="margin-top:32px;">
+            <div>
+                <div class="badge"><i class="fas fa-route"></i> Siguiente paso</div>
+                <h2 style="margin:10px 0 8px;">Activa el panel y prueba flujos</h2>
+                <p style="margin:0 0 14px;">Ingresa al login renovado, obt&eacute;n tu token y explora el dashboard con la nueva disposici&oacute;n de formularios.</p>
+                <a class="btn btn-primary" href="/login/"><i class="fas fa-right-to-bracket"></i> Ir a login</a>
+            </div>
+            <div class="bubble">
+                <h3 style="margin-top:0;">Recordatorio de seguridad</h3>
+                <ul>
+                    <li><i class="fas fa-key"></i> Usa HTTPS y rota la SECRET_KEY</li>
+                    <li><i class="fas fa-database"></i> Apunta la nueva base de datos definida en settings</li>
+                    <li><i class="fas fa-circle-nodes"></i> Ajusta CORS a tus dominios reales</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Temuco Soft &middot; Backend listo para equipos distribuidos
+    </footer>
+</body>
+</html>

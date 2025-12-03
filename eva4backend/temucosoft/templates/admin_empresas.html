@@ -1,0 +1,59 @@
+{% extends 'admin_base.html' %}
+{% block title %}Empresas Cliente{% endblock %}
+{% block content %}
+<h3>Empresas Cliente</h3>
+<div class="mb-3">
+  <button class="btn btn-primary" id="btnNew">Nueva Empresa</button>
+</div>
+<table class="table table-striped" id="companiesTable">
+  <thead><tr><th>Nombre</th><th>RUT</th><th>Email</th><th>Teléfono</th><th>Acciones</th></tr></thead>
+  <tbody><tr><td colspan="5" class="text-muted">Cargando...</td></tr></tbody>
+</table>
+
+<!-- Modal -->
+<div class="modal" tabindex="-1" id="companyModal">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Empresa</h5><button class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <form id="companyForm">
+        <input type="hidden" id="companyId">
+        <div class="mb-3"><label>Nombre</label><input id="c_name" class="form-control" required></div>
+        <div class="mb-3"><label>RUT</label><input id="c_rut" class="form-control"></div>
+        <div class="mb-3"><label>Email</label><input id="c_email" class="form-control"></div>
+        <div class="mb-3"><label>Teléfono</label><input id="c_phone" class="form-control"></div>
+      </form>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button><button id="saveCompany" class="btn btn-primary">Guardar</button></div>
+  </div></div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const companyModal = new bootstrap.Modal(document.getElementById('companyModal'));
+const btnNew = document.getElementById('btnNew');
+btnNew.addEventListener('click', ()=>{ document.getElementById('companyForm').reset(); document.getElementById('companyId').value=''; companyModal.show(); });
+
+async function loadCompanies(){
+  const res = await fetch('/api/admin/companies/', { headers: authHeaders });
+  const data = await res.json();
+  const tbody = document.querySelector('#companiesTable tbody');
+  if (!res.ok) { tbody.innerHTML = '<tr><td colspan="5" class="text-danger">Error al cargar</td></tr>'; return; }
+  tbody.innerHTML = data.map(c=>`<tr><td>${c.name}</td><td>${c.rut||''}</td><td>${c.email||''}</td><td>${c.phone||''}</td><td><button class="btn btn-sm btn-danger" onclick="deleteCompany(${c.id})">Eliminar</button></td></tr>`).join('');
+}
+
+async function deleteCompany(id){ if(!confirm('Eliminar empresa?')) return; const res = await fetch('/api/admin/companies/'+id+'/', { method:'DELETE', headers: authHeaders }); if(res.ok) loadCompanies(); }
+
+document.getElementById('saveCompany').addEventListener('click', async ()=>{
+  const id = document.getElementById('companyId').value;
+  const payload = { name: document.getElementById('c_name').value, rut: document.getElementById('c_rut').value, email: document.getElementById('c_email').value, phone: document.getElementById('c_phone').value };
+  const method = id? 'PUT':'POST';
+  const url = id? '/api/admin/companies/'+id+'/' : '/api/admin/companies/';
+  const res = await fetch(url, { method, headers: Object.assign({'Content-Type':'application/json'}, authHeaders), body: JSON.stringify(payload) });
+  if (res.ok) { companyModal.hide(); loadCompanies(); } else { alert('Error al guardar'); }
+});
+
+loadCompanies();
+</script>
+{% endblock %}
